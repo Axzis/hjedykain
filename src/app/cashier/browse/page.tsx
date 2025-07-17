@@ -1,0 +1,90 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { ProductCard } from "@/components/products/product-card";
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
+import type { Product } from "@/lib/types";
+import { db } from "@/lib/firebase";
+import { collection, getDocs } from "firebase/firestore";
+import { useDebounce } from '@/hooks/use-debounce';
+import { Skeleton } from '@/components/ui/skeleton';
+
+async function getProducts(): Promise<Product[]> {
+  const productsCol = collection(db, "products");
+  const productSnapshot = await getDocs(productsCol);
+  const productList = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+  return productList;
+}
+
+function ProductGridSkeleton() {
+  return (
+    <>
+      {Array.from({ length: 8 }).map((_, i) => (
+         <div key={i} className="flex flex-col space-y-3">
+          <Skeleton className="h-[125px] w-full rounded-xl" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        </div>
+      ))}
+    </>
+  )
+}
+
+export default function BrowsePage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      const productList = await getProducts();
+      setProducts(productList);
+      setLoading(false);
+    };
+    fetchProducts();
+  }, []);
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-headline font-bold tracking-tight">
+            Our Fabric Collection
+        </h1>
+        <p className="text-muted-foreground mt-2">Browse through our curated selection of fine fabrics.</p>
+      </div>
+      <div className="mb-8 mx-auto max-w-lg">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search by fabric name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-full"
+            />
+          </div>
+      </div>
+      {loading ? (
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <ProductGridSkeleton />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredProducts.map((product: Product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
