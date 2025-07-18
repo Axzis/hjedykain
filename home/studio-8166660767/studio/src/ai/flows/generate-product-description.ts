@@ -39,8 +39,8 @@ export async function generateProductDescription(
 
 const productDescriptionPrompt = ai.definePrompt({
   name: 'generateProductDescriptionPrompt',
-  inputSchema: GenerateProductDescriptionInputSchema,
-  outputSchema: GenerateProductDescriptionOutputSchema,
+  input: { schema: GenerateProductDescriptionInputSchema },
+  output: { schema: GenerateProductDescriptionOutputSchema },
   prompt: `You are an expert copywriter specializing in product descriptions for fabrics.
 
   Based on the fabric name and its key properties, create a compelling and informative product description in Indonesian that highlights its features and benefits.
