@@ -10,6 +10,6 @@ export const ai = genkit({
       apiKey: process.env.GEMINI_API_KEY,
     }),
   ],
-  logLevel: 'debug',
+  // logLevel: 'debug', // logLevel is not a valid option in Genkit v1.x
   enableTracing: true,
 });
