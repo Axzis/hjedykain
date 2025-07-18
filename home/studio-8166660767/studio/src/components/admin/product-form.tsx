@@ -18,7 +18,6 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import type { Product } from '@/lib/types'
-import { Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { db } from '@/lib/firebase'
@@ -122,7 +121,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             name="price"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Price (per yard)</FormLabel>
+                <FormLabel>Price (per meter)</FormLabel>
                 <FormControl>
                     <Input type="number" step="0.01" {...field} />
                 </FormControl>
@@ -135,7 +134,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             name="stock"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Stock (yards)</FormLabel>
+                <FormLabel>Stock (meters)</FormLabel>
                 <FormControl>
                     <Input type="number" {...field} />
                 </FormControl>
@@ -152,7 +151,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
               <FormLabel>Key Properties</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="e.g., 100% Silk, 19mm weight, 45 inch width..."
+                  placeholder="e.g., 100% Silk, 19mm weight, 114 cm width..."
                   {...field}
                 />
               </FormControl>
