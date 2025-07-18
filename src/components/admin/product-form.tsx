@@ -1,3 +1,4 @@
+
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -17,8 +18,6 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import type { Product } from '@/lib/types'
-import { generateProductDescription } from '@/ai/flows/generate-product-description'
-import { Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { db } from '@/lib/firebase'
@@ -30,10 +29,8 @@ const formSchema = z.object({
   }),
   price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
-  properties: z.string().min(10, { message: "Please list key properties."}),
-  description: z.string().min(10, {
-    message: 'Description must be at least 10 characters.',
-  }),
+  properties: z.string().optional(),
+  description: z.string().optional(),
   images: z.array(z.string().url({ message: "Please enter a valid image URL." })).min(1, {message: 'At least one image is required.'}).max(5),
 })
 
@@ -47,7 +44,6 @@ const defaultPlaceholders = Array(5).fill('https://placehold.co/600x400.png');
 export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
   const { toast } = useToast()
   const router = useRouter();
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -100,45 +96,6 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
       });
     } finally {
       setIsSaving(false);
-    }
-  }
-
-  async function handleGenerateDescription() {
-    setIsGenerating(true);
-    const name = form.getValues('name');
-    const properties = form.getValues('properties');
-
-    if (!name || !properties) {
-        toast({
-            title: "Missing Information",
-            description: "Please provide a name and key properties to generate a description.",
-            variant: "destructive"
-        })
-        setIsGenerating(false);
-        return;
-    }
-
-    try {
-        const result = await generateProductDescription({
-            fabricName: name,
-            keyProperties: properties,
-        })
-        if(result.description) {
-            form.setValue('description', result.description);
-            toast({
-                title: "Description Generated!",
-                description: "The AI-powered description has been added."
-            })
-        }
-    } catch(e) {
-        console.error(e);
-        toast({
-            title: "Generation Failed",
-            description: "Could not generate a description at this time.",
-            variant: "destructive"
-        })
-    } finally {
-        setIsGenerating(false);
     }
   }
 
@@ -199,7 +156,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
                 />
               </FormControl>
               <FormDescription>
-                Used to generate the product description.
+                Brief details about the fabric.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -210,13 +167,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex justify-between items-center">
-                Description
-                <Button type="button" size="sm" variant="outline" onClick={handleGenerateDescription} disabled={isGenerating || isSaving}>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    {isGenerating ? 'Generating...' : 'Generate with AI'}
-                </Button>
-              </FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="A luxurious silk with a beautiful sheen..."
@@ -268,7 +219,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
         </div>
 
 
-        <Button type="submit" disabled={isSaving || isGenerating}>
+        <Button type="submit" disabled={isSaving}>
           {isSaving ? 'Saving...' : `Save ${product ? 'Changes' : 'Product'}`}
         </Button>
       </form>

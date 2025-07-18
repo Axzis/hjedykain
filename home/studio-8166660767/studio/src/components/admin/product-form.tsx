@@ -1,3 +1,4 @@
+
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -17,6 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import type { Product } from '@/lib/types'
+import { Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { db } from '@/lib/firebase'
