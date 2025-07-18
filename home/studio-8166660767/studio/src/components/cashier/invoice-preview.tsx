@@ -138,26 +138,6 @@ Thank you for your business!
     
     return (
         <div className="max-w-2xl mx-auto">
-             <style>{`
-                @media print {
-                  body > *:not(#printable-invoice-wrapper), 
-                  body > * .no-print {
-                    display: none !important;
-                  }
-                  #printable-invoice-wrapper, #printable-invoice-wrapper #printable-invoice {
-                    display: block !important;
-                    visibility: visible !important;
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 100%;
-                    margin: 0;
-                    padding: 0;
-                    border: none;
-                    box-shadow: none;
-                  }
-                }
-            `}</style>
             <Dialog open={isRegisterMemberDialogOpen} onOpenChange={setIsRegisterMemberDialogOpen}>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
