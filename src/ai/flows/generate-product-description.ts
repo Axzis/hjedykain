@@ -9,8 +9,22 @@
  * - GenerateProductDescriptionOutput - The return type for the generateProductDescription function.
  */
 
-import { ai } from '@/ai/genkit';
+import { genkit } from 'genkit';
+import { googleAI } from '@genkit-ai/googleai';
 import { z } from 'genkit/zod';
+import 'dotenv/config';
+
+// Configure Genkit directly within the flow file
+export const ai = genkit({
+  plugins: [
+    googleAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    }),
+  ],
+  logLevel: 'debug',
+  enableTracing: true,
+});
+
 
 const GenerateProductDescriptionInputSchema = z.object({
   fabricName: z.string().describe('The name of the fabric.'),
