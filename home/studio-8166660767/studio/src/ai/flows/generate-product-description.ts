@@ -9,13 +9,13 @@
  * - GenerateProductDescriptionOutput - The return type for the generateProductDescription function.
  */
 
-import { genkit, configureGenkit } from 'genkit';
+import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
 import { z } from 'genkit/zod';
-import 'dotenv/config';
 
-// Configure Genkit directly within the flow file
-configureGenkit({
+// This `ai` object is the central point for Genkit configuration.
+// It is configured with the Google AI plugin.
+const ai = genkit({
   plugins: [
     googleAI({
       apiKey: process.env.GEMINI_API_KEY,
@@ -25,7 +25,7 @@ configureGenkit({
   enableTracing: true,
 });
 
-
+// Define the schema for the input data using Zod.
 const GenerateProductDescriptionInputSchema = z.object({
   fabricName: z.string().describe('The name of the fabric.'),
   keyProperties: z
@@ -38,6 +38,7 @@ export type GenerateProductDescriptionInput = z.infer<
   typeof GenerateProductDescriptionInputSchema
 >;
 
+// Define the schema for the output data using Zod.
 const GenerateProductDescriptionOutputSchema = z.object({
   description: z.string().describe('A compelling and informative product description.'),
 });
@@ -45,31 +46,27 @@ export type GenerateProductDescriptionOutput = z.infer<
   typeof GenerateProductDescriptionOutputSchema
 >;
 
-export async function generateProductDescription(
-  input: GenerateProductDescriptionInput
-): Promise<GenerateProductDescriptionOutput> {
-  return generateProductDescriptionFlow(input);
-}
-
-const productDescriptionPrompt = genkit.definePrompt({
-  name: 'generateProductDescriptionPrompt',
-  input: { schema: GenerateProductDescriptionInputSchema },
-  output: { schema: GenerateProductDescriptionOutputSchema },
-  prompt: `You are an expert copywriter specializing in product descriptions for fabrics.
-
-  Based on the fabric name and its key properties, create a compelling and informative product description in Indonesian that highlights its features and benefits.
-
-  Fabric Name: {{{fabricName}}}
-  Key Properties: {{{keyProperties}}}`,
-});
-
-const generateProductDescriptionFlow = genkit.defineFlow(
+// Define the main flow that orchestrates the AI call.
+const generateProductDescriptionFlow = ai.defineFlow(
   {
     name: 'generateProductDescriptionFlow',
     inputSchema: GenerateProductDescriptionInputSchema,
     outputSchema: GenerateProductDescriptionOutputSchema,
   },
   async (input) => {
+    // Define the prompt inside the flow for clarity.
+    const productDescriptionPrompt = ai.definePrompt({
+      name: 'generateProductDescriptionPrompt',
+      input: { schema: GenerateProductDescriptionInputSchema },
+      output: { schema: GenerateProductDescriptionOutputSchema },
+      prompt: `You are an expert copywriter specializing in product descriptions for fabrics.
+
+      Based on the fabric name and its key properties, create a compelling and informative product description in Indonesian that highlights its features and benefits.
+
+      Fabric Name: {{{fabricName}}}
+      Key Properties: {{{keyProperties}}}`,
+    });
+
     const { output } = await productDescriptionPrompt(input);
 
     if (!output) {
@@ -79,3 +76,12 @@ const generateProductDescriptionFlow = genkit.defineFlow(
     return output;
   }
 );
+
+
+// Export a single function to be called from the application UI.
+// This function acts as a clean entry point to the Genkit flow.
+export async function generateProductDescription(
+  input: GenerateProductDescriptionInput
+): Promise<GenerateProductDescriptionOutput> {
+  return generateProductDescriptionFlow(input);
+}
