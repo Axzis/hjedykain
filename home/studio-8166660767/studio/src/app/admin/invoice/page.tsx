@@ -1,14 +1,36 @@
 
-'use client';
-
 import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
 import InvoicePreview from '@/components/cashier/invoice-preview';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import type { Sale, Member } from '@/lib/types';
+import { notFound } from 'next/navigation';
 
-// This component now wraps the client component and provides the search params.
-function AdminInvoicePageContent() {
-    const searchParams = useSearchParams();
-    const saleId = searchParams.get('saleId');
+async function getInvoiceData(saleId: string): Promise<{ sale: Sale; member: Member | null }> {
+    const saleDocRef = doc(db, 'sales', saleId);
+    const saleDocSnap = await getDoc(saleDocRef);
+
+    if (!saleDocSnap.exists()) {
+        notFound();
+    }
+
+    const sale = { id: saleDocSnap.id, ...saleDocSnap.data() } as Sale;
+    let member: Member | null = null;
+
+    if (sale.memberId) {
+        const memberDocRef = doc(db, 'members', sale.memberId);
+        const memberDocSnap = await getDoc(memberDocRef);
+        if (memberDocSnap.exists()) {
+            member = { id: memberDocSnap.id, ...memberDocSnap.data() } as Member;
+        }
+    }
+
+    return { sale, member };
+}
+
+
+export default async function AdminInvoicePage({ searchParams }: { searchParams: { saleId?: string }}) {
+    const saleId = searchParams.saleId;
 
     if (!saleId) {
          return (
@@ -18,14 +40,11 @@ function AdminInvoicePageContent() {
         );
     }
     
-    return <InvoicePreview saleId={saleId} />;
-}
+    const data = await getInvoiceData(saleId);
 
-
-export default function AdminInvoicePage() {
     return (
         <Suspense fallback={<div>Loading invoice...</div>}>
-            <AdminInvoicePageContent />
+            <InvoicePreview initialSale={data.sale} initialMember={data.member} />
         </Suspense>
     );
 }

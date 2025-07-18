@@ -2,7 +2,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Sale, Member } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ArrowLeft, Printer } from 'lucide-react';
 import Logo from '@/components/common/logo';
 import { db } from '@/lib/firebase';
-import { doc, updateDoc, getDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -36,50 +36,17 @@ const WhatsAppIcon = () => (
   );
 
 interface InvoicePreviewProps {
-    saleId: string;
+    initialSale: Sale;
+    initialMember: Member | null;
 }
 
-export default function InvoicePreview({ saleId }: InvoicePreviewProps) {
+export default function InvoicePreview({ initialSale, initialMember }: InvoicePreviewProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const [sale, setSale] = useState<Sale | null>(null);
-    const [member, setMember] = useState<Member | null>(null);
+    const [sale, setSale] = useState<Sale | null>(initialSale);
+    const [member, setMember] = useState<Member | null>(initialMember);
     const [isRegisterMemberDialogOpen, setIsRegisterMemberDialogOpen] = useState(false);
-    const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-
-    useEffect(() => {
-        async function getInvoiceData(id: string) {
-            setLoading(true);
-            const saleDocRef = doc(db, 'sales', id);
-            const saleDocSnap = await getDoc(saleDocRef);
-
-            if (!saleDocSnap.exists()) {
-                setSale(null);
-                setLoading(false);
-                return;
-            }
-
-            const saleData = { id: saleDocSnap.id, ...saleDocSnap.data() } as Sale;
-            setSale(saleData);
-            
-            let memberData: Member | null = null;
-            if (saleData.memberId) {
-                const memberDocRef = doc(db, 'members', saleData.memberId);
-                const memberDocSnap = await getDoc(memberDocRef);
-                if (memberDocSnap.exists()) {
-                    memberData = { id: memberDocSnap.id, ...memberDocSnap.data() } as Member;
-                }
-            }
-            setMember(memberData);
-            setLoading(false);
-        }
-
-        if (saleId) {
-            getInvoiceData(saleId);
-        }
-    }, [saleId]);
-
 
     const isUserAdmin = pathname.startsWith('/admin');
     const backPath = isUserAdmin ? '/admin/new-sale' : '/cashier';
@@ -158,10 +125,6 @@ Thank you for your business!
                 variant: "destructive"
             });
         }
-    }
-
-    if (loading) {
-         return <div>Loading invoice...</div>
     }
 
     if (!sale) {
