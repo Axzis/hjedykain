@@ -48,8 +48,10 @@ function QuantityDialog({
   if (!product) return null;
 
   const handleConfirm = () => {
-    onConfirm(quantity);
-    onClose();
+    if (quantity > 0) {
+      onConfirm(quantity);
+      onClose();
+    }
   };
 
   return (
@@ -67,8 +69,9 @@ function QuantityDialog({
             id="quantity"
             type="number"
             value={quantity}
-            onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 1)}
-            min="1"
+            onChange={(e) => setQuantity(parseFloat(e.target.value) || 0)}
+            min="0.1"
+            step="0.1"
             max={product.stock}
             className="mt-2"
           />
@@ -107,7 +110,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
   );
 
   const handleProductClick = (product: Product) => {
-    if (product.stock < 1) {
+    if (product.stock <= 0) {
        toast({
             title: "Out of Stock",
             description: `${product.name} is currently out of stock.`,
