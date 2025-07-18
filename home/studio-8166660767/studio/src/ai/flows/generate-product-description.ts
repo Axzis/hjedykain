@@ -3,27 +3,15 @@
 
 /**
  * @fileOverview An AI agent for generating product descriptions.
+ * This file contains the full Genkit flow for generating a product description based on fabric properties.
  *
  * - generateProductDescription - A function that generates a product description.
  * - GenerateProductDescriptionInput - The input type for the generateProductDescription function.
  * - GenerateProductDescriptionOutput - The return type for the generateProductDescription function.
  */
 
-import { genkit } from 'genkit';
-import { googleAI } from '@genkit-ai/googleai';
+import { ai } from '@/ai/genkit';
 import { z } from 'genkit/zod';
-
-// This `ai` object is the central point for Genkit configuration.
-// It is configured with the Google AI plugin.
-const ai = genkit({
-  plugins: [
-    googleAI({
-      apiKey: process.env.GEMINI_API_KEY,
-    }),
-  ],
-  logLevel: 'debug',
-  enableTracing: true,
-});
 
 // Define the schema for the input data using Zod.
 const GenerateProductDescriptionInputSchema = z.object({
@@ -46,6 +34,19 @@ export type GenerateProductDescriptionOutput = z.infer<
   typeof GenerateProductDescriptionOutputSchema
 >;
 
+// Define the prompt that will be sent to the AI model.
+const productDescriptionPrompt = ai.definePrompt({
+  name: 'generateProductDescriptionPrompt',
+  input: { schema: GenerateProductDescriptionInputSchema },
+  output: { schema: GenerateProductDescriptionOutputSchema },
+  prompt: `You are an expert copywriter specializing in product descriptions for fabrics.
+
+  Based on the fabric name and its key properties, create a compelling and informative product description in Indonesian that highlights its features and benefits.
+
+  Fabric Name: {{{fabricName}}}
+  Key Properties: {{{keyProperties}}}`,
+});
+
 // Define the main flow that orchestrates the AI call.
 const generateProductDescriptionFlow = ai.defineFlow(
   {
@@ -54,19 +55,6 @@ const generateProductDescriptionFlow = ai.defineFlow(
     outputSchema: GenerateProductDescriptionOutputSchema,
   },
   async (input) => {
-    // Define the prompt inside the flow for clarity.
-    const productDescriptionPrompt = ai.definePrompt({
-      name: 'generateProductDescriptionPrompt',
-      input: { schema: GenerateProductDescriptionInputSchema },
-      output: { schema: GenerateProductDescriptionOutputSchema },
-      prompt: `You are an expert copywriter specializing in product descriptions for fabrics.
-
-      Based on the fabric name and its key properties, create a compelling and informative product description in Indonesian that highlights its features and benefits.
-
-      Fabric Name: {{{fabricName}}}
-      Key Properties: {{{keyProperties}}}`,
-    });
-
     const { output } = await productDescriptionPrompt(input);
 
     if (!output) {
