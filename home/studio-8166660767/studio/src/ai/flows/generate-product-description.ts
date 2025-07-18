@@ -10,7 +10,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'zod';
+import { z } from 'genkit/zod';
 
 const GenerateProductDescriptionInputSchema = z.object({
   fabricName: z.string().describe('The name of the fabric.'),
@@ -39,8 +39,8 @@ export async function generateProductDescription(
 
 const productDescriptionPrompt = ai.definePrompt({
   name: 'generateProductDescriptionPrompt',
-  input: { schema: GenerateProductDescriptionInputSchema },
-  output: { schema: GenerateProductDescriptionOutputSchema },
+  inputSchema: GenerateProductDescriptionInputSchema,
+  outputSchema: GenerateProductDescriptionOutputSchema,
   prompt: `You are an expert copywriter specializing in product descriptions for fabrics.
 
   Based on the fabric name and its key properties, create a compelling and informative product description in Indonesian that highlights its features and benefits.
