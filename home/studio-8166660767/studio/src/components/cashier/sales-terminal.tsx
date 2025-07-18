@@ -110,7 +110,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
   );
 
   const handleProductClick = (product: Product) => {
-    if (product.stock < 1) {
+    if (product.stock <= 0) {
        toast({
             title: "Out of Stock",
             description: `${product.name} is currently out of stock.`,
