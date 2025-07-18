@@ -10,7 +10,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'zod';
+import { z } from 'genkit/zod';
 
 const GenerateProductDescriptionInputSchema = z.object({
   fabricName: z.string().describe('The name of the fabric.'),
