@@ -237,7 +237,7 @@ export function SalesHistoryTable({ data, page, total, pageSize }: DataTableProp
             const date = format(new Date(sale.date), 'yyyy-MM-dd HH:mm:ss');
             const memberName = sale.memberName || "N/A";
             const totalItems = sale.items.reduce((sum, item) => sum + item.quantity, 0);
-            const itemsSold = `"${sale.items.map(i => i.productName).join(', ')}"`;
+            const itemsSold = `"${sale.items.map(i => `${i.quantity}m of ${i.productName}`).join(', ')}"`;
             const remark = sale.remark ? `"${sale.remark.replace(/"/g, '""')}"` : "";
 
             return [

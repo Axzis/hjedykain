@@ -78,7 +78,7 @@ ${itemsText}
 *Discount:* -Rp${(currentSale.discount ?? 0).toLocaleString('id-ID')}
 *Total:* *Rp${currentSale.total.toLocaleString('id-ID')}*
 
-Thank you for your business!
+Terima kasih atas kunjungan Anda!
         `;
     
         const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message.trim())}`;
