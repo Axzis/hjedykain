@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useState } from 'react';
 import type { Sale, Member } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
