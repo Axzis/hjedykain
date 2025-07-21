@@ -73,7 +73,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead className="text-right">Price</TableHead>
-              <TableHead>Stock (meters)</TableHead>
+              <TableHead>Stock</TableHead>
               <TableHead>
                 <span className="sr-only">Actions</span>
               </TableHead>

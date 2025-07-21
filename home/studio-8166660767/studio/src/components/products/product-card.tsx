@@ -53,7 +53,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </Link>
         </CardTitle>
         <p className="mt-2 text-xl font-semibold text-foreground">
-          Rp{product.price.toLocaleString('id-ID')} / meter
+          Rp{product.price.toLocaleString('id-ID')} / {product.unitName}
         </p>
       </CardContent>
       <CardFooter className="p-4 pt-0">
