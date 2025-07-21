@@ -43,11 +43,14 @@ interface InvoicePreviewProps {
 export default function InvoicePreview({ initialSale, initialMember }: InvoicePreviewProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const [sale, setSale] = useState<Sale>(initialSale);
-    const [member, setMember] = useState<Member | null>(initialMember);
-    const [isRegisterMemberDialogOpen, setIsRegisterMemberDialogOpen] = useState(false);
     const { toast } = useToast();
 
+    // Use props directly instead of duplicating state
+    const [sale, setSale] = useState(initialSale);
+    const [member, setMember] = useState(initialMember);
+
+    const [isRegisterMemberDialogOpen, setIsRegisterMemberDialogOpen] = useState(false);
+    
     const isUserAdmin = pathname.startsWith('/admin');
     const backPath = isUserAdmin ? '/admin/new-sale' : '/cashier';
 
@@ -67,7 +70,7 @@ export default function InvoicePreview({ initialSale, initialMember }: InvoicePr
 *Invoice from POS Edy Kain*
 -------------------------
 *Sale ID:* SALE-${currentSale.id.slice(-6).toUpperCase()}
-*Date:* ${new Date(currentSale.date).toLocaleDateString()}
+*Date:* ${new Date(currentSale.date).toLocaleDateString('id-ID')}
 *Cashier:* ${currentSale.cashierId}
 
 *Items:*
@@ -188,7 +191,7 @@ Terima kasih atas kunjungan Anda!
                             </div>
                             <div className="text-right">
                                 <h3 className="font-semibold mb-1">Sale Date</h3>
-                                <p className="text-muted-foreground">{new Date(sale.date).toLocaleDateString()}</p>
+                                <p className="text-muted-foreground">{new Date(sale.date).toLocaleDateString('id-ID')}</p>
                                 <h3 className="font-semibold mb-1 mt-2">Cashier</h3>
                                 <p className="text-muted-foreground">{sale.cashierId}</p>
                             </div>

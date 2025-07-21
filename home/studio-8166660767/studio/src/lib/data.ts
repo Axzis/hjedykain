@@ -130,9 +130,9 @@ export const users: User[] = [
 ];
 
 export const members: Member[] = [
-    { id: 'mem-001', name: 'Alice Johnson', email: 'alice.j@email.com', phone: '555-0101', joinDate: '2023-01-15T10:00:00Z' },
-    { id: 'mem-002', name: 'Bob Williams', email: 'bob.w@email.com', phone: '555-0102', joinDate: '2023-02-20T11:30:00Z' },
-    { id: 'mem-003', name: 'Charlie Brown', email: 'charlie.b@email.com', phone: '555-0103', joinDate: '2023-03-10T14:00:00Z' },
-    { id: 'mem-004', name: 'Diana Miller', email: 'diana.m@email.com', phone: '555-0104', joinDate: '2023-04-05T16:45:00Z' },
-    { id: 'mem-005', name: 'Ethan Davis', email: 'ethan.d@email.com', phone: '555-0105', joinDate: '2023-05-22T09:15:00Z' }
+    { id: 'mem-001', name: 'Alice Johnson', email: 'alice.j@email.com', phone: '6281234567890', joinDate: '2023-01-15T10:00:00Z' },
+    { id: 'mem-002', name: 'Bob Williams', email: 'bob.w@email.com', phone: '6281234567891', joinDate: '2023-02-20T11:30:00Z' },
+    { id: 'mem-003', name: 'Charlie Brown', email: 'charlie.b@email.com', phone: '6281234567892', joinDate: '2023-03-10T14:00:00Z' },
+    { id: 'mem-004', name: 'Diana Miller', email: 'diana.m@email.com', phone: '6281234567893', joinDate: '2023-04-05T16:45:00Z' },
+    { id: 'mem-005', name: 'Ethan Davis', email: 'ethan.d@email.com', phone: '6281234567894', joinDate: '2023-05-22T09:15:00Z' }
 ];

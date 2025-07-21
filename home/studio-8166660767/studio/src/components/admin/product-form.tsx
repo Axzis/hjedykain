@@ -123,7 +123,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
                 <FormItem>
                 <FormLabel>Price (per meter)</FormLabel>
                 <FormControl>
-                    <Input type="number" step="0.01" {...field} />
+                    <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
