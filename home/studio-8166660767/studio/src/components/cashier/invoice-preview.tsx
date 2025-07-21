@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import type { Sale, Member } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,7 +43,7 @@ interface InvoicePreviewProps {
 export default function InvoicePreview({ initialSale, initialMember }: InvoicePreviewProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const [sale, setSale] = useState<Sale | null>(initialSale);
+    const [sale, setSale] = useState<Sale>(initialSale);
     const [member, setMember] = useState<Member | null>(initialMember);
     const [isRegisterMemberDialogOpen, setIsRegisterMemberDialogOpen] = useState(false);
     const { toast } = useToast();
@@ -108,7 +108,7 @@ Terima kasih atas kunjungan Anda!
             });
             
             // Update local state
-            setSale(prevSale => prevSale ? { ...prevSale, memberId: newMember.id, memberName: newMember.name } : null);
+            setSale(prevSale => ({ ...prevSale, memberId: newMember.id, memberName: newMember.name }));
             setMember(newMember);
 
             // Close dialog

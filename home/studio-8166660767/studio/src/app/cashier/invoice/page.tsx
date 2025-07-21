@@ -1,5 +1,4 @@
 
-
 import { Suspense } from 'react';
 import InvoicePreview from '@/components/cashier/invoice-preview';
 import { db } from '@/lib/firebase';

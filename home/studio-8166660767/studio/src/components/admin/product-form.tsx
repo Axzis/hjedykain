@@ -151,7 +151,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
               <FormLabel>Key Properties</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="e.g., 100% Silk, 19mm weight, 114 cm width..."
+                  placeholder="e.g., 100% Sutra, berat 19mm, lebar 114 cm..."
                   {...field}
                 />
               </FormControl>
