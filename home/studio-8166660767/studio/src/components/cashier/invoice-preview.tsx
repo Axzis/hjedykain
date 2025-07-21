@@ -45,7 +45,6 @@ export default function InvoicePreview({ initialSale, initialMember }: InvoicePr
     const pathname = usePathname();
     const { toast } = useToast();
 
-    // Use props directly instead of duplicating state
     const [sale, setSale] = useState(initialSale);
     const [member, setMember] = useState(initialMember);
 
