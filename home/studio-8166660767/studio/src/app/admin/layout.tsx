@@ -16,7 +16,7 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Home, LogOut, Package, Users, Contact, History, ShoppingCart, FileText, Search, Cog } from 'lucide-react';
+import { Home, LogOut, Package, Users, Contact, History, ShoppingCart, Search, Cog } from 'lucide-react';
 import Logo from '@/components/common/logo';
 
 export default function AdminLayout({
