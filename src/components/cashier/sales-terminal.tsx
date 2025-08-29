@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PlusCircle, Search, User as UserIcon, XCircle } from 'lucide-react';
+import { Layers3, PlusCircle, Search, User as UserIcon, XCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { db } from '@/lib/firebase';
@@ -21,6 +21,7 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { cn } from '@/lib/utils';
+import { Badge } from '../ui/badge';
 
 function QuantityDialog({
   product,
@@ -60,11 +61,11 @@ function QuantityDialog({
         <DialogHeader>
           <DialogTitle>{product.name}</DialogTitle>
           <DialogDescription>
-            Enter the quantity you want to add to the cart. Available stock: {product.stock} {product.unitName}.
+            Enter the quantity you want to add to the cart. Available stock: {product.stock}.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <Label htmlFor="quantity">Quantity ({product.unitName})</Label>
+          <Label htmlFor="quantity">Quantity</Label>
           <Input
             id="quantity"
             type="number"
@@ -128,7 +129,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
     if (quantity > selectedProduct.stock) {
         toast({
             title: "Stock limit reached",
-            description: `Only ${selectedProduct.stock} ${selectedProduct.unitName} of ${selectedProduct.name} available.`,
+            description: `Only ${selectedProduct.stock} of ${selectedProduct.name} available.`,
             variant: "destructive"
         });
         return;
@@ -157,7 +158,6 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
           productName: selectedProduct.name,
           quantity: quantity,
           price: selectedProduct.price,
-          unitName: selectedProduct.unitName
         },
       ]);
     }
@@ -180,7 +180,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
     } else if (newQuantity > selectedProduct.stock) {
       toast({
         title: "Stock limit reached",
-        description: `Only ${selectedProduct.stock} ${selectedProduct.unitName} of ${selectedProduct.name} available.`,
+        description: `Only ${selectedProduct.stock} of ${selectedProduct.name} available.`,
         variant: "destructive"
       });
       return;
@@ -333,7 +333,10 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                       <Card
                         key={product.id}
                         onClick={() => handleProductClick(product)}
-                        className="cursor-pointer hover:shadow-md transition-shadow group"
+                        className={cn(
+                            "cursor-pointer hover:shadow-md transition-shadow group flex flex-col",
+                            product.stock <= 0 && "opacity-50 cursor-not-allowed"
+                        )}
                       >
                         <div className="relative aspect-square">
                           <Image
@@ -343,13 +346,22 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                             className="object-cover rounded-t-lg"
                             data-ai-hint="fabric swatch"
                           />
-                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                              <PlusCircle className="h-8 w-8 text-white/80 opacity-0 group-hover:opacity-100 transition-opacity" />
-                          </div>
+                           {product.stock > 0 && (
+                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                                <PlusCircle className="h-8 w-8 text-white/80 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                           )}
+                           {product.stock <= 0 && (
+                             <Badge variant="destructive" className="absolute top-2 left-2">Out of Stock</Badge>
+                           )}
                         </div>
-                        <div className="p-2 text-sm">
-                          <p className="font-semibold truncate">{product.name}</p>
+                        <div className="p-2 text-sm flex-grow flex flex-col">
+                          <p className="font-semibold truncate flex-grow">{product.name}</p>
                           <p className="text-muted-foreground">Rp{product.price.toLocaleString('id-ID')}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                            <Layers3 className="h-3 w-3" />
+                            {product.stock} in stock
+                          </p>
                         </div>
                       </Card>
                     );
@@ -386,7 +398,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                           <TableRow key={item.productId} className="cursor-pointer" onClick={() => handleEditCartItem(item)}>
                             <TableCell className="font-medium">{item.productName}</TableCell>
                             <TableCell className="text-center">
-                              {item.quantity} {item.unitName}
+                              {item.quantity}
                             </TableCell>
                             <TableCell className="text-right">
                               Rp{(item.price * item.quantity).toLocaleString('id-ID')}
@@ -493,3 +505,5 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
     </>
   );
 }
+
+    
