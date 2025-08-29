@@ -44,7 +44,7 @@ export default function AdminLayout({
   const headerTitle = useMemo(() => getTitleFromPathname(pathname), [pathname]);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <Logo href="/admin" />
@@ -55,7 +55,7 @@ export default function AdminLayout({
               <SidebarMenuButton asChild isActive={pathname === '/admin'}>
                 <Link href="/admin">
                   <Home />
-                  Dashboard
+                  <span>Dashboard</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -63,7 +63,7 @@ export default function AdminLayout({
               <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/new-sale')}>
                 <Link href="/admin/new-sale">
                   <ShoppingCart />
-                  New Sale
+                  <span>New Sale</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -71,7 +71,7 @@ export default function AdminLayout({
               <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/browse')}>
                 <Link href="/admin/browse">
                   <Search />
-                  Browse Catalog
+                  <span>Browse Catalog</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -79,7 +79,7 @@ export default function AdminLayout({
               <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/products')}>
                 <Link href="/admin/products">
                   <Package />
-                  Products
+                  <span>Products</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -87,7 +87,7 @@ export default function AdminLayout({
               <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/history')}>
                 <Link href="/admin/history">
                   <History />
-                  Sales History
+                  <span>Sales History</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -95,7 +95,7 @@ export default function AdminLayout({
               <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/users')}>
                 <Link href="/admin/users">
                   <Users />
-                  Staff
+                  <span>Staff</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -103,7 +103,7 @@ export default function AdminLayout({
               <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/members')}>
                 <Link href="/admin/members">
                   <Contact />
-                  Members
+                  <span>Members</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -111,7 +111,7 @@ export default function AdminLayout({
               <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/settings')}>
                 <Link href="/admin/settings">
                   <Cog />
-                  Settings
+                  <span>Settings</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -122,7 +122,7 @@ export default function AdminLayout({
           <Button asChild variant="ghost" className="w-full justify-start gap-2">
             <Link href="/login">
               <LogOut />
-              <span className="truncate group-data-[state=collapsed]:hidden">Logout</span>
+              <span className="group-data-[state=collapsed]:hidden">Logout</span>
             </Link>
           </Button>
         </SidebarFooter>

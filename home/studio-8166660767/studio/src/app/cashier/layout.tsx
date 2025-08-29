@@ -41,7 +41,7 @@ export default function CashierLayout({
 
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <Logo href="/cashier" />
@@ -52,7 +52,7 @@ export default function CashierLayout({
               <SidebarMenuButton asChild isActive={pathname === '/cashier' || pathname.startsWith('/cashier/new-sale')}>
                 <Link href="/cashier">
                   <ShoppingCart />
-                  New Sale
+                  <span>New Sale</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -60,7 +60,7 @@ export default function CashierLayout({
               <SidebarMenuButton asChild isActive={pathname.startsWith('/cashier/browse')}>
                 <Link href="/cashier/browse">
                   <Search />
-                  Browse Catalog
+                  <span>Browse Catalog</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -68,7 +68,7 @@ export default function CashierLayout({
               <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/members')}>
                 <Link href="/admin/members">
                   <Contact />
-                  Members
+                  <span>Members</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -76,7 +76,7 @@ export default function CashierLayout({
               <SidebarMenuButton asChild isActive={pathname.startsWith('/cashier/history')}>
                 <Link href="/cashier/history">
                   <History />
-                  Sales History
+                  <span>Sales History</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -87,7 +87,7 @@ export default function CashierLayout({
           <Button asChild variant="ghost" className="w-full justify-start gap-2">
             <Link href="/login">
               <LogOut />
-              <span className="truncate group-data-[state=collapsed]:hidden">Logout</span>
+              <span className="group-data-[state=collapsed]:hidden">Logout</span>
             </Link>
           </Button>
         </SidebarFooter>

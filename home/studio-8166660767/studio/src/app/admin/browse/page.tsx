@@ -10,6 +10,7 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs, query } from "firebase/firestore";
 import { useDebounce } from '@/hooks/use-debounce';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 
 async function getProducts(): Promise<{ products: Product[], categories: string[] }> {
   const productsCol = collection(db, "products");
@@ -18,6 +19,22 @@ async function getProducts(): Promise<{ products: Product[], categories: string[
   const categories = [...new Set(productList.map(p => p.category).filter(Boolean) as string[])].sort();
   return { products: productList, categories };
 }
+
+function ProductGridSkeleton() {
+    return (
+      <>
+        {Array.from({ length: 8 }).map((_, i) => (
+           <div key={i} className="flex flex-col space-y-3">
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-4 w-[150px]" />
+            </div>
+          </div>
+        ))}
+      </>
+    )
+  }
 
 export default function BrowsePage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -83,7 +100,9 @@ export default function BrowsePage() {
         </Select>
       </div>
       {loading ? (
-        <div className="text-center">Loading products...</div>
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <ProductGridSkeleton />
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProducts.map((product: Product) => (

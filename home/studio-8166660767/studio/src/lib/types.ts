@@ -48,3 +48,9 @@ export type Sale = {
   memberName_lowercase?: string | null;
   remark?: string | null;
 };
+
+export type Unit = {
+    id: string;
+    name: string;
+    createdAt: string;
+}
