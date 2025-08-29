@@ -27,6 +27,7 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: 'Product name must be at least 2 characters.',
   }),
+  category: z.string().optional(),
   price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
   properties: z.string().optional(),
@@ -50,6 +51,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: product?.name || '',
+      category: product?.category || '',
       price: product?.price || 0,
       stock: product?.stock || 0,
       properties: product?.properties || '',
@@ -113,6 +115,19 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
               <FormLabel>Product Name</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., Royal Blue Silk" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., Silk, Denim, Cotton" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

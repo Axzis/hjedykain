@@ -23,11 +23,20 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Badge } from '../ui/badge';
 
 const columns: ColumnDef<Product>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
+  },
+  {
+    accessorKey: 'category',
+    header: 'Category',
+    cell: ({ row }) => {
+        const category = row.getValue('category') as string;
+        return category ? <Badge variant="secondary">{category}</Badge> : <span className="text-muted-foreground">N/A</span>;
+    }
   },
   {
     accessorKey: 'price',

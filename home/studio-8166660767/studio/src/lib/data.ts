@@ -8,6 +8,7 @@ export const products: Omit<Product, 'id'>[] = [
     name: 'Royal Blue Silk Charmeuse',
     price: 350000,
     stock: 120,
+    category: 'Silk',
     description: 'A luxurious silk with a beautiful sheen and fluid drape, perfect for elegant evening wear and bridal gowns. Its smooth finish glides against the skin, offering unparalleled comfort and a touch of glamour.',
     properties: '100% Sutra, berat 19mm, lebar 114 cm, tenun Satin',
     images: [
@@ -22,6 +23,7 @@ export const products: Omit<Product, 'id'>[] = [
     name: 'Classic Indigo Denim',
     price: 180000,
     stock: 500,
+    category: 'Denim',
     description: 'Durable and timeless, this 12oz denim is the quintessential fabric for jeans, jackets, and skirts. It will soften and fade beautifully with wear, creating a personalized look over time.',
     properties: '100% Katun, berat 12 oz, lebar 147 cm, tenun Twill 3x1',
     images: [
