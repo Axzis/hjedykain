@@ -90,25 +90,26 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
     },
   });
 
+  const updateQueryParam = (updates: { key: string; value: string | number }[]) => {
+    const params = new URLSearchParams(searchParams.toString());
+    updates.forEach(({ key, value }) => {
+        params.set(key, String(value));
+    });
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
   React.useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('page', '1');
     if (debouncedSearch) {
       params.set('search', debouncedSearch);
     } else {
       params.delete('search');
     }
+    // Reset to page 1 when search changes
+    params.set('page', '1');
     router.replace(`${pathname}?${params.toString()}`);
-  }, [debouncedSearch, router, pathname, searchParams]);
-
-  const updateQueryParam = (key: string, value: string | number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(key, String(value));
-    if (key !== 'page') {
-      params.set('page', '1');
-    }
-    router.push(`${pathname}?${params.toString()}`);
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, router, pathname]);
 
   return (
     <div>
@@ -170,7 +171,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
               <Select
                 value={`${pageSize}`}
                 onValueChange={(value) => {
-                  updateQueryParam('pageSize', value);
+                  updateQueryParam([{ key: 'pageSize', value }, { key: 'page', value: 1 }]);
                 }}
               >
                 <SelectTrigger className="h-8 w-[70px]">
@@ -192,7 +193,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateQueryParam('page', page - 1)}
+                onClick={() => updateQueryParam([{ key: 'page', value: page - 1 }])}
                 disabled={page <= 1}
               >
                 Previous
@@ -200,7 +201,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateQueryParam('page', page + 1)}
+                onClick={() => updateQueryParam([{ key: 'page', value: page + 1 }])}
                 disabled={page >= pageCount}
               >
                 Next
