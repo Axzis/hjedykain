@@ -29,7 +29,7 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <Logo href="/admin" />
