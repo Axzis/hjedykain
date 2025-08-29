@@ -16,28 +16,10 @@ import {
   SidebarTrigger,
   SidebarInset,
   SidebarSeparator,
-  useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Home, LogOut, Package, Users, Contact, History, ShoppingCart, Search, Cog, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Home, LogOut, Package, Users, Contact, History, ShoppingCart, Search, Cog } from 'lucide-react';
 import Logo from '@/components/common/logo';
-
-
-function MaximizeMinimizeButton() {
-    const { state, toggleSidebar } = useSidebar();
-    const isCollapsed = state === 'collapsed';
-
-    return (
-        <Button
-            variant="ghost"
-            className="w-full justify-start gap-2"
-            onClick={toggleSidebar}
-        >
-            {isCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
-            <span className="truncate">{isCollapsed ? "Maximize" : "Minimize"}</span>
-        </Button>
-    )
-}
 
 export default function AdminLayout({
   children,
@@ -113,7 +95,6 @@ export default function AdminLayout({
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-            <MaximizeMinimizeButton />
           <SidebarSeparator />
           <Button asChild variant="ghost" className="w-full justify-start gap-2">
             <Link href="/login">
@@ -125,7 +106,7 @@ export default function AdminLayout({
       </Sidebar>
       <SidebarInset>
         <header className="flex h-14 items-center gap-4 border-b bg-background/95 px-6 sticky top-0 z-30">
-            <SidebarTrigger className="md:hidden" />
+            <SidebarTrigger />
             <div className="flex-1">
                 <h1 className="text-lg font-semibold font-headline">Admin Dashboard</h1>
             </div>
