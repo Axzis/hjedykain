@@ -3,7 +3,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -20,7 +19,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Home, LogOut, Package, Users, Contact, History, ShoppingCart, Search, Cog } from 'lucide-react';
 import Logo from '@/components/common/logo';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 
 export default function AdminLayout({
@@ -29,20 +27,9 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isMobile = useIsMobile();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    if (!isMobile) {
-      setIsSidebarOpen(false);
-    } else {
-       setIsSidebarOpen(true);
-    }
-  }, [isMobile]);
-
 
   return (
-    <SidebarProvider open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+    <SidebarProvider>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <Logo href="/admin" />
