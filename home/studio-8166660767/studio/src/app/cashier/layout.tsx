@@ -29,7 +29,7 @@ export default function CashierLayout({
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader>
           <Logo href="/cashier/browse" />
         </SidebarHeader>
@@ -81,7 +81,7 @@ export default function CashierLayout({
       </Sidebar>
       <SidebarInset>
         <header className="flex h-14 items-center gap-4 border-b bg-background/95 px-6 sticky top-0 z-30">
-            <SidebarTrigger className="md:hidden" />
+            <SidebarTrigger />
             <div className="flex-1">
                 <h1 className="text-lg font-semibold font-headline">Cashier POS</h1>
             </div>
