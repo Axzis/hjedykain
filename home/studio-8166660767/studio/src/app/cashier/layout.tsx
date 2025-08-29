@@ -41,7 +41,7 @@ export default function CashierLayout({
 
 
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <Logo href="/cashier" />

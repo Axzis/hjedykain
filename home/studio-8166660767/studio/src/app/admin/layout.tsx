@@ -44,7 +44,7 @@ export default function AdminLayout({
   const headerTitle = useMemo(() => getTitleFromPathname(pathname), [pathname]);
 
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <Logo href="/admin" />
