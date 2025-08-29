@@ -60,11 +60,11 @@ function QuantityDialog({
         <DialogHeader>
           <DialogTitle>{product.name}</DialogTitle>
           <DialogDescription>
-            Enter the quantity you want to add to the cart. Available stock: {product.stock} {product.unitName}.
+            Enter the quantity you want to add to the cart. Available stock: {product.stock}.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <Label htmlFor="quantity">Quantity ({product.unitName})</Label>
+          <Label htmlFor="quantity">Quantity</Label>
           <Input
             id="quantity"
             type="number"
@@ -128,7 +128,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
     if (quantity > selectedProduct.stock) {
         toast({
             title: "Stock limit reached",
-            description: `Only ${selectedProduct.stock} ${selectedProduct.unitName} of ${selectedProduct.name} available.`,
+            description: `Only ${selectedProduct.stock} of ${selectedProduct.name} available.`,
             variant: "destructive"
         });
         return;
@@ -157,7 +157,6 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
           productName: selectedProduct.name,
           quantity: quantity,
           price: selectedProduct.price,
-          unitName: selectedProduct.unitName
         },
       ]);
     }
@@ -180,7 +179,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
     } else if (newQuantity > selectedProduct.stock) {
       toast({
         title: "Stock limit reached",
-        description: `Only ${selectedProduct.stock} ${selectedProduct.unitName} of ${selectedProduct.name} available.`,
+        description: `Only ${selectedProduct.stock} of ${selectedProduct.name} available.`,
         variant: "destructive"
       });
       return;
@@ -386,7 +385,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                           <TableRow key={item.productId} className="cursor-pointer" onClick={() => handleEditCartItem(item)}>
                             <TableCell className="font-medium">{item.productName}</TableCell>
                             <TableCell className="text-center">
-                              {item.quantity} {item.unitName}
+                              {item.quantity}
                             </TableCell>
                             <TableCell className="text-right">
                               Rp{(item.price * item.quantity).toLocaleString('id-ID')}

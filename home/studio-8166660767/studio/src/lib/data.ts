@@ -1,3 +1,4 @@
+
 import type { Product, User, Role, Member } from './types';
 
 // This data is for seeding purposes only.
@@ -7,8 +8,6 @@ export const products: Omit<Product, 'id'>[] = [
     name: 'Royal Blue Silk Charmeuse',
     price: 350000,
     stock: 120,
-    unitId: 'meter', // This should match an ID in the 'units' collection after seeding
-    unitName: 'meter',
     description: 'A luxurious silk with a beautiful sheen and fluid drape, perfect for elegant evening wear and bridal gowns. Its smooth finish glides against the skin, offering unparalleled comfort and a touch of glamour.',
     properties: '100% Sutra, berat 19mm, lebar 114 cm, tenun Satin',
     images: [
@@ -23,8 +22,6 @@ export const products: Omit<Product, 'id'>[] = [
     name: 'Classic Indigo Denim',
     price: 180000,
     stock: 500,
-    unitId: 'meter',
-    unitName: 'meter',
     description: 'Durable and timeless, this 12oz denim is the quintessential fabric for jeans, jackets, and skirts. It will soften and fade beautifully with wear, creating a personalized look over time.',
     properties: '100% Katun, berat 12 oz, lebar 147 cm, tenun Twill 3x1',
     images: [
@@ -48,8 +45,4 @@ export const members: Member[] = [
     { id: 'mem-003', name: 'Charlie Brown', email: 'charlie.b@email.com', phone: '6281234567892', joinDate: '2023-03-10T14:00:00Z' },
 ];
 
-export const units = [
-    { id: 'meter', name: 'meter' },
-    { id: 'pcs', name: 'pcs' },
-    { id: 'roll', name: 'roll' },
-]
+// This file no longer exports 'units'.

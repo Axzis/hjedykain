@@ -58,7 +58,7 @@ export default function ProductDetailView({ product }: { product: Product }) {
                     <Layers3 className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{product.stock} {product.unitName}</div>
+                    <div className="text-2xl font-bold">{product.stock}</div>
                     <p className="text-xs text-muted-foreground">Available now</p>
                 </CardContent>
              </Card>
@@ -69,7 +69,7 @@ export default function ProductDetailView({ product }: { product: Product }) {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">Rp{product.price.toLocaleString('id-ID')}</div>
-                    <p className="text-xs text-muted-foreground">per {product.unitName}</p>
+                    <p className="text-xs text-muted-foreground">per item</p>
                 </CardContent>
              </Card>
           </div>

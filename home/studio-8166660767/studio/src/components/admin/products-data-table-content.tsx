@@ -34,18 +34,12 @@ const columns: ColumnDef<Product>[] = [
         currency: 'IDR',
         minimumFractionDigits: 0,
       }).format(amount);
-      const unitName = row.original.unitName || 'unit';
-      return <div className="text-right font-medium">{formatted} / {unitName}</div>;
+      return <div className="text-right font-medium">{formatted}</div>;
     },
   },
   {
     accessorKey: 'stock',
     header: 'Stock',
-    cell: ({row}) => {
-        const stock = row.getValue('stock');
-        const unitName = row.original.unitName || 'unit';
-        return <span>{`${stock} ${unitName}`}</span>
-    }
   },
   {
     id: 'actions',

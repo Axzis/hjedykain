@@ -17,12 +17,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
-import type { Product, Unit } from '@/lib/types'
-import { useState, useEffect } from 'react'
+import type { Product } from '@/lib/types'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { db } from '@/lib/firebase'
-import { doc, setDoc, addDoc, collection, getDocs, orderBy, query } from 'firebase/firestore'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { doc, setDoc, addDoc, collection } from 'firebase/firestore'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -30,7 +29,6 @@ const formSchema = z.object({
   }),
   price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
-  unitId: z.string().min(1, { message: "Please select a unit." }),
   properties: z.string().optional(),
   description: z.string().optional(),
   images: z.array(z.string().url({ message: "Please enter a valid image URL." })).min(1, {message: 'At least one image is required.'}).max(5),
@@ -47,18 +45,6 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
   const { toast } = useToast()
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
-  const [units, setUnits] = useState<Unit[]>([]);
-
-  useEffect(() => {
-    async function fetchUnits() {
-        const unitsCol = collection(db, 'units');
-        const q = query(unitsCol, orderBy('name'));
-        const unitsSnapshot = await getDocs(q);
-        const unitsList = unitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Unit));
-        setUnits(unitsList);
-    }
-    fetchUnits();
-  }, [])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,7 +52,6 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
       name: product?.name || '',
       price: product?.price || 0,
       stock: product?.stock || 0,
-      unitId: product?.unitId || '',
       properties: product?.properties || '',
       description: product?.description || '',
       images: product?.images && product.images.length > 0 ? [...product.images, ...Array(5 - product.images.length).fill('https://placehold.co/600x400.png')].slice(0,5) : defaultPlaceholders,
@@ -76,16 +61,8 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSaving(true);
     
-    const selectedUnit = units.find(u => u.id === values.unitId);
-    if (!selectedUnit) {
-        toast({ title: 'Error', description: 'Selected unit not found.', variant: 'destructive' });
-        setIsSaving(false);
-        return;
-    }
-
     const dataToSave = { 
         ...values,
-        unitName: selectedUnit.name,
         images: values.images.filter(img => img.trim() !== '' && img.trim() !== 'https://placehold.co/600x400.png') 
     };
 
@@ -125,8 +102,6 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
     }
   }
 
-  const selectedUnitName = units.find(u => u.id === form.watch('unitId'))?.name || 'unit';
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -149,7 +124,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             name="price"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Price (per {selectedUnitName})</FormLabel>
+                <FormLabel>Price</FormLabel>
                 <FormControl>
                     <Input type="number" {...field} />
                 </FormControl>
@@ -159,41 +134,19 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             />
              <FormField
                 control={form.control}
-                name="unitId"
+                name="stock"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Unit</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a unit" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {units.length === 0 && <SelectItem value="loading" disabled>Loading units...</SelectItem>}
-                        {units.map(unit => (
-                            <SelectItem key={unit.id} value={unit.id}>{unit.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormItem>
+                    <FormLabel>Stock</FormLabel>
+                    <FormControl>
+                        <Input type="number" {...field} />
+                    </FormControl>
                     <FormMessage />
-                  </FormItem>
+                    </FormItem>
                 )}
-              />
+                />
         </div>
-        <FormField
-            control={form.control}
-            name="stock"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Stock ({selectedUnitName})</FormLabel>
-                <FormControl>
-                    <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
+        
         <FormField
           control={form.control}
           name="properties"

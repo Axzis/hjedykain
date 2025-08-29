@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, doc, writeBatch } from 'firebase/firestore';
-import { products, users, members, units } from '@/lib/data';
+import { products, users, members } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -15,19 +16,11 @@ export default function SeedPage() {
 
   const handleSeed = async () => {
     setIsLoading(true);
-    setStatus('Seeding units, products, users, and members...');
+    setStatus('Seeding products, users, and members...');
     
     try {
       const batch = writeBatch(db);
 
-      // Seed units
-      const unitsCollection = collection(db, 'units');
-      units.forEach((unit) => {
-          const docRef = doc(unitsCollection, unit.id);
-          const { id, ...unitData } = unit;
-          batch.set(docRef, { ...unitData, createdAt: new Date().toISOString()});
-      });
-      
       // Seed products
       const productsCollection = collection(db, 'products');
       products.forEach((product) => {
@@ -53,7 +46,7 @@ export default function SeedPage() {
 
       await batch.commit();
 
-      const successMessage = `Successfully seeded ${units.length} units, ${products.length} products, ${users.length} users, and ${members.length} members.`;
+      const successMessage = `Successfully seeded ${products.length} products, ${users.length} users, and ${members.length} members.`;
       setStatus(successMessage);
       toast({
         title: 'Database Seeded',

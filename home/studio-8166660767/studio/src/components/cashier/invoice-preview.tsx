@@ -61,7 +61,7 @@ export default function InvoicePreview({ initialSale, initialMember }: InvoicePr
         const itemsText = currentSale.items
           .map(
             (item) =>
-              `- ${item.productName}: ${item.quantity} ${item.unitName} x Rp${item.price.toLocaleString('id-ID')} = Rp${(item.quantity * item.price).toLocaleString('id-ID')}`
+              `- ${item.productName}: ${item.quantity} x Rp${item.price.toLocaleString('id-ID')} = Rp${(item.quantity * item.price).toLocaleString('id-ID')}`
           )
           .join('\n');
     
@@ -208,7 +208,7 @@ Terima kasih atas kunjungan Anda!
                                 {sale.items.map((item) => (
                                     <TableRow key={item.productId}>
                                         <TableCell className="font-medium">{item.productName}</TableCell>
-                                        <TableCell className="text-center">{item.quantity} {item.unitName}</TableCell>
+                                        <TableCell className="text-center">{item.quantity}</TableCell>
                                         <TableCell className="text-center">Rp{item.price.toLocaleString('id-ID')}</TableCell>
                                         <TableCell className="text-right">Rp{(item.price * item.quantity).toLocaleString('id-ID')}</TableCell>
                                     </TableRow>

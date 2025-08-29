@@ -1,7 +1,9 @@
+
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -16,7 +18,7 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Home, LogOut, Package, Users, Contact, History, ShoppingCart, FileText, Search } from 'lucide-react';
+import { Home, LogOut, Package, Users, Contact, History, ShoppingCart, Search, Cog } from 'lucide-react';
 import Logo from '@/components/common/logo';
 
 export default function AdminLayout({
@@ -28,9 +30,9 @@ export default function AdminLayout({
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader>
-          <Logo href="/admin/browse" />
+          <Logo href="/admin" />
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
@@ -104,7 +106,7 @@ export default function AdminLayout({
       </Sidebar>
       <SidebarInset>
         <header className="flex h-14 items-center gap-4 border-b bg-background/95 px-6 sticky top-0 z-30">
-            <SidebarTrigger className="md:hidden" />
+            <SidebarTrigger />
             <div className="flex-1">
                 <h1 className="text-lg font-semibold font-headline">Admin Dashboard</h1>
             </div>

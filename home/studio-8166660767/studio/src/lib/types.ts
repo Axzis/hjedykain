@@ -1,3 +1,4 @@
+
 export type Product = {
   id: string;
   name: string;
@@ -6,8 +7,6 @@ export type Product = {
   description: string;
   properties: string;
   images: string[];
-  unitId: string;
-  unitName: string;
 };
 
 export type Role = 'Admin' | 'Cashier';
@@ -33,7 +32,6 @@ export type SaleItem = {
   productName: string;
   quantity: number;
   price: number;
-  unitName: string;
 };
 
 export type Sale = {
@@ -49,9 +47,3 @@ export type Sale = {
   memberName_lowercase?: string | null;
   remark?: string | null;
 };
-
-export type Unit = {
-    id: string;
-    name: string;
-    createdAt: string; // Stored as ISO string
-}
