@@ -16,10 +16,10 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Home, LogOut, Package, Users, Contact, History, ShoppingCart, Search, Cog } from 'lucide-react';
+import { LogOut, ShoppingCart, History, Contact, Search } from 'lucide-react';
 import Logo from '@/components/common/logo';
 
-export default function AdminLayout({
+export default function CashierLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -30,59 +30,27 @@ export default function AdminLayout({
     <SidebarProvider defaultOpen={false}>
       <Sidebar>
         <SidebarHeader>
-          <Logo href="/admin/browse" />
+          <Logo href="/cashier/browse" />
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/admin'}>
-                <Link href="/admin">
-                  <Home />
-                  Dashboard
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/new-sale')}>
-                <Link href="/admin/new-sale">
+              <SidebarMenuButton asChild isActive={pathname === '/cashier'}>
+                <Link href="/cashier">
                   <ShoppingCart />
                   New Sale
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/browse')}>
-                <Link href="/admin/browse">
+              <SidebarMenuButton asChild isActive={pathname.startsWith('/cashier/browse')}>
+                <Link href="/cashier/browse">
                   <Search />
                   Browse Catalog
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/products')}>
-                <Link href="/admin/products">
-                  <Package />
-                  Products
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/history')}>
-                <Link href="/admin/history">
-                  <History />
-                  Sales History
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/users')}>
-                <Link href="/admin/users">
-                  <Users />
-                  Staff
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
               <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/members')}>
                 <Link href="/admin/members">
                   <Contact />
@@ -90,11 +58,11 @@ export default function AdminLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/settings')}>
-                <Link href="/admin/settings">
-                  <Cog />
-                  Settings
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={pathname.startsWith('/cashier/history')}>
+                <Link href="/cashier/history">
+                  <History />
+                  Sales History
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -114,7 +82,7 @@ export default function AdminLayout({
         <header className="flex h-14 items-center gap-4 border-b bg-background/95 px-6 sticky top-0 z-30">
             <SidebarTrigger />
             <div className="flex-1">
-                <h1 className="text-lg font-semibold font-headline">Admin Dashboard</h1>
+                <h1 className="text-lg font-semibold font-headline">Cashier POS</h1>
             </div>
         </header>
         <main className="flex-1 p-6">{children}</main>
