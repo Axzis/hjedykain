@@ -19,6 +19,20 @@ import {
 import { Button } from '@/components/ui/button';
 import { Home, LogOut, Package, Users, Contact, History, ShoppingCart, Search, Cog } from 'lucide-react';
 import Logo from '@/components/common/logo';
+import { useMemo } from 'react';
+
+const getTitleFromPathname = (pathname: string): string => {
+    if (pathname === '/admin') return 'Dashboard';
+    if (pathname.startsWith('/admin/new-sale')) return 'New Sale';
+    if (pathname.startsWith('/admin/browse')) return 'Browse Catalog';
+    if (pathname.startsWith('/admin/products')) return 'Manage Products';
+    if (pathname.startsWith('/admin/history')) return 'Sales History';
+    if (pathname.startsWith('/admin/invoice')) return 'Invoice Detail';
+    if (pathname.startsWith('/admin/users')) return 'Manage Staff';
+    if (pathname.startsWith('/admin/members')) return 'Manage Members';
+    if (pathname.startsWith('/admin/settings')) return 'Master Settings';
+    return 'Admin Dashboard';
+};
 
 
 export default function AdminLayout({
@@ -27,6 +41,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const headerTitle = useMemo(() => getTitleFromPathname(pathname), [pathname]);
 
   return (
     <SidebarProvider>
@@ -116,7 +131,7 @@ export default function AdminLayout({
         <header className="flex h-14 items-center gap-4 border-b bg-background/95 px-6 sticky top-0 z-30">
             <SidebarTrigger />
             <div className="flex-1">
-                <h1 className="text-lg font-semibold font-headline">Admin Dashboard</h1>
+                <h1 className="text-lg font-semibold font-headline">{headerTitle}</h1>
             </div>
         </header>
         <main className="flex-1 p-6">{children}</main>

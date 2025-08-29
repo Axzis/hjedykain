@@ -19,6 +19,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { LogOut, ShoppingCart, History, Contact, Search } from 'lucide-react';
 import Logo from '@/components/common/logo';
+import { useMemo } from 'react';
+
+const getTitleFromPathname = (pathname: string): string => {
+    if (pathname === '/cashier' || pathname.startsWith('/cashier/new-sale')) return 'New Sale';
+    if (pathname.startsWith('/cashier/browse')) return 'Browse Catalog';
+    if (pathname.startsWith('/cashier/members')) return 'Manage Members';
+    if (pathname.startsWith('/cashier/history')) return 'Sales History';
+    if (pathname.startsWith('/cashier/invoice')) return 'Invoice Detail';
+    return 'Cashier POS';
+};
+
 
 export default function CashierLayout({
   children,
@@ -26,17 +37,19 @@ export default function CashierLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const headerTitle = useMemo(() => getTitleFromPathname(pathname), [pathname]);
+
 
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
         <SidebarHeader>
-          <Logo href="/cashier/browse" />
+          <Logo href="/cashier" />
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/cashier'}>
+              <SidebarMenuButton asChild isActive={pathname === '/cashier' || pathname.startsWith('/cashier/new-sale')}>
                 <Link href="/cashier">
                   <ShoppingCart />
                   New Sale
@@ -83,7 +96,7 @@ export default function CashierLayout({
         <header className="flex h-14 items-center gap-4 border-b bg-background/95 px-6 sticky top-0 z-30">
             <SidebarTrigger />
             <div className="flex-1">
-                <h1 className="text-lg font-semibold font-headline">Cashier POS</h1>
+                <h1 className="text-lg font-semibold font-headline">{headerTitle}</h1>
             </div>
         </header>
         <main className="flex-1 p-6">{children}</main>
