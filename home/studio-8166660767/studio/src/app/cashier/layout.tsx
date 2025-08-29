@@ -27,7 +27,7 @@ export default function CashierLayout({
   const pathname = usePathname();
 
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
           <Logo href="/cashier/browse" />
