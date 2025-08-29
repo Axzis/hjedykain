@@ -1,3 +1,4 @@
+
 'use client';
 import * as React from 'react';
 import {
@@ -28,16 +29,24 @@ const columns: ColumnDef<Product>[] = [
     header: () => <div className="text-right">Price</div>,
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('price'));
-      const formatted = new Intl.NumberFormat('en-US', {
+      const formatted = new Intl.NumberFormat('id-ID', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
       }).format(amount);
-      return <div className="text-right font-medium">{formatted}</div>;
+      const unitName = row.original.unitName || 'unit';
+      return <div className="text-right font-medium">{formatted} / {unitName}</div>;
     },
   },
   {
     accessorKey: 'stock',
-    header: 'Stock (yards)',
+    header: 'Stock',
+    cell: ({row}) => {
+        const stock = row.getValue('stock');
+        const unitName = row.original.unitName || 'unit';
+        return <span>{`${stock} ${unitName}`}</span>
+    }
   },
   {
     id: 'actions',

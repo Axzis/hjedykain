@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Package, Users, ShoppingCart, Contact } from "lucide-react";
 import { db } from "@/lib/firebase";
@@ -86,7 +87,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: S
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold">Rp{totalRevenue.toLocaleString('id-ID')}</div>
             <p className="text-xs text-muted-foreground">
               Revenue for the selected period
             </p>

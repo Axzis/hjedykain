@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -52,7 +53,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </Link>
         </CardTitle>
         <p className="mt-2 text-xl font-semibold text-foreground">
-          ${product.price.toFixed(2)} / yard
+          Rp{product.price.toLocaleString('id-ID')} / {product.unitName}
         </p>
       </CardContent>
       <CardFooter className="p-4 pt-0">

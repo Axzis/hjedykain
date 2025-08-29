@@ -60,11 +60,11 @@ function QuantityDialog({
         <DialogHeader>
           <DialogTitle>{product.name}</DialogTitle>
           <DialogDescription>
-            Enter the quantity you want to add to the cart. Available stock: {product.stock} yards.
+            Enter the quantity you want to add to the cart. Available stock: {product.stock} {product.unitName}.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <Label htmlFor="quantity">Quantity (yards)</Label>
+          <Label htmlFor="quantity">Quantity ({product.unitName})</Label>
           <Input
             id="quantity"
             type="number"
@@ -128,7 +128,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
     if (quantity > selectedProduct.stock) {
         toast({
             title: "Stock limit reached",
-            description: `Only ${selectedProduct.stock} yards of ${selectedProduct.name} available.`,
+            description: `Only ${selectedProduct.stock} ${selectedProduct.unitName} of ${selectedProduct.name} available.`,
             variant: "destructive"
         });
         return;
@@ -157,6 +157,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
           productName: selectedProduct.name,
           quantity: quantity,
           price: selectedProduct.price,
+          unitName: selectedProduct.unitName
         },
       ]);
     }
@@ -179,7 +180,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
     } else if (newQuantity > selectedProduct.stock) {
       toast({
         title: "Stock limit reached",
-        description: `Only ${selectedProduct.stock} yards of ${selectedProduct.name} available.`,
+        description: `Only ${selectedProduct.stock} ${selectedProduct.unitName} of ${selectedProduct.name} available.`,
         variant: "destructive"
       });
       return;
@@ -348,7 +349,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                         </div>
                         <div className="p-2 text-sm">
                           <p className="font-semibold truncate">{product.name}</p>
-                          <p className="text-muted-foreground">${product.price.toFixed(2)}</p>
+                          <p className="text-muted-foreground">Rp{product.price.toLocaleString('id-ID')}</p>
                         </div>
                       </Card>
                     );
@@ -385,10 +386,10 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                           <TableRow key={item.productId} className="cursor-pointer" onClick={() => handleEditCartItem(item)}>
                             <TableCell className="font-medium">{item.productName}</TableCell>
                             <TableCell className="text-center">
-                              {item.quantity}
+                              {item.quantity} {item.unitName}
                             </TableCell>
                             <TableCell className="text-right">
-                              ${(item.price * item.quantity).toFixed(2)}
+                              Rp{(item.price * item.quantity).toLocaleString('id-ID')}
                             </TableCell>
                             <TableCell>
                               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => {e.stopPropagation(); removeFromCart(item.productId)}}>
@@ -449,13 +450,13 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                     <Textarea placeholder="Add a remark (optional)..." value={remarks} onChange={e => setRemarks(e.target.value)} />
                   
                     <div>
-                      <Label htmlFor="discount">Discount ($)</Label>
+                      <Label htmlFor="discount">Discount (Rp)</Label>
                       <Input
                           id="discount"
                           type="number"
                           value={discount}
                           onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
-                          placeholder="0.00"
+                          placeholder="0"
                       />
                     </div>
                 </div>
@@ -467,19 +468,19 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                   </div>
                   <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span>Rp{subtotal.toLocaleString('id-ID')}</span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Discount</span>
-                      <span className="text-destructive">-${discount.toFixed(2)}</span>
+                      <span className="text-destructive">-Rp{discount.toLocaleString('id-ID')}</span>
                     </div>
                   )}
                 </div>
 
                 <div className="w-full flex justify-between text-lg font-bold">
                   <span>Total</span>
-                  <span>${finalTotal.toFixed(2)}</span>
+                  <span>Rp{finalTotal.toLocaleString('id-ID')}</span>
                 </div>
                 <Button onClick={handleCompleteSale} className="w-full" size="lg">
                   Complete Sale

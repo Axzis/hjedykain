@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -70,9 +71,11 @@ const getColumns = (isUserAdmin: boolean, router: ReturnType<typeof useRouter>):
       header: () => <div className="text-right">Total</div>,
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue('total'));
-        const formatted = new Intl.NumberFormat('en-US', {
+        const formatted = new Intl.NumberFormat('id-ID', {
           style: 'currency',
-          currency: 'USD',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
         }).format(amount);
         return <div className="text-right font-medium">{formatted}</div>;
       },
@@ -229,22 +232,24 @@ export function SalesHistoryTable({ data, page, total, pageSize }: DataTableProp
             return;
         }
         
-        const csvHeader = "Sale ID,Date,Member,Total Items,Subtotal,Discount,Total,Cashier,Remark\n";
+        const csvHeader = "Sale ID,Date,Member,Total Items,Items Sold,Subtotal (Rp),Discount (Rp),Total (Rp),Cashier,Remark\n";
         const csvRows = allSales.map(sale => {
             const saleId = `SALE-${sale.id.slice(-6).toUpperCase()}`;
             const date = format(new Date(sale.date), 'yyyy-MM-dd HH:mm:ss');
             const memberName = sale.memberName || "N/A";
             const totalItems = sale.items.reduce((sum, item) => sum + item.quantity, 0);
-            const remark = sale.remark ? `"${sale.remark.replace(/"/g, '""')}"` : ""; // Handle quotes in remarks
+            const itemsSold = `"${sale.items.map(i => `${i.quantity}m of ${i.productName}`).join(', ')}"`;
+            const remark = sale.remark ? `"${sale.remark.replace(/"/g, '""')}"` : "";
 
             return [
                 saleId,
                 date,
                 memberName,
                 totalItems,
-                sale.subtotal.toFixed(2),
-                (sale.discount || 0).toFixed(2),
-                sale.total.toFixed(2),
+                itemsSold,
+                sale.subtotal,
+                (sale.discount || 0),
+                sale.total,
                 sale.cashierId,
                 remark
             ].join(',');

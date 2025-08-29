@@ -22,7 +22,7 @@ const WhatsAppIcon = () => (
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -43,11 +43,13 @@ interface InvoicePreviewProps {
 export default function InvoicePreview({ initialSale, initialMember }: InvoicePreviewProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const [sale, setSale] = useState<Sale | null>(initialSale);
-    const [member, setMember] = useState<Member | null>(initialMember);
-    const [isRegisterMemberDialogOpen, setIsRegisterMemberDialogOpen] = useState(false);
     const { toast } = useToast();
 
+    const [sale, setSale] = useState(initialSale);
+    const [member, setMember] = useState(initialMember);
+
+    const [isRegisterMemberDialogOpen, setIsRegisterMemberDialogOpen] = useState(false);
+    
     const isUserAdmin = pathname.startsWith('/admin');
     const backPath = isUserAdmin ? '/admin/new-sale' : '/cashier';
 
@@ -59,28 +61,26 @@ export default function InvoicePreview({ initialSale, initialMember }: InvoicePr
         const itemsText = currentSale.items
           .map(
             (item) =>
-              `- ${item.productName}: ${item.quantity} x $${item.price.toFixed(
-                2
-              )} = $${(item.quantity * item.price).toFixed(2)}`
+              `- ${item.productName}: ${item.quantity} ${item.unitName} x Rp${item.price.toLocaleString('id-ID')} = Rp${(item.quantity * item.price).toLocaleString('id-ID')}`
           )
           .join('\n');
     
         const message = `
-*Invoice from StitchPOS*
+*Invoice from POS Edy Kain*
 -------------------------
 *Sale ID:* SALE-${currentSale.id.slice(-6).toUpperCase()}
-*Date:* ${new Date(currentSale.date).toLocaleDateString()}
+*Date:* ${new Date(currentSale.date).toLocaleDateString('id-ID')}
 *Cashier:* ${currentSale.cashierId}
 
 *Items:*
 ${itemsText}
 
 -------------------------
-*Subtotal:* $${currentSale.subtotal.toFixed(2)}
-*Discount:* -$${(currentSale.discount ?? 0).toFixed(2)}
-*Total:* *$${currentSale.total.toFixed(2)}*
+*Subtotal:* Rp${currentSale.subtotal.toLocaleString('id-ID')}
+*Discount:* -Rp${(currentSale.discount ?? 0).toLocaleString('id-ID')}
+*Total:* *Rp${currentSale.total.toLocaleString('id-ID')}*
 
-Thank you for your business!
+Terima kasih atas kunjungan Anda!
         `;
     
         const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message.trim())}`;
@@ -110,7 +110,7 @@ Thank you for your business!
             });
             
             // Update local state
-            setSale(prevSale => prevSale ? { ...prevSale, memberId: newMember.id, memberName: newMember.name } : null);
+            setSale(prevSale => ({ ...prevSale, memberId: newMember.id, memberName: newMember.name }));
             setMember(newMember);
 
             // Close dialog
@@ -132,7 +132,7 @@ Thank you for your business!
     if (!sale) {
         return (
             <div className="text-center py-20">
-                <h2 className="text-2xl font-semibold">Invalid or missing sale data.</h2>
+                <h2 className="text-2xl font-semibold">Invoice not found.</h2>
                 <Button onClick={() => router.back()} className="mt-4">Go Back</Button>
             </div>
         );
@@ -140,26 +140,6 @@ Thank you for your business!
     
     return (
         <div className="max-w-2xl mx-auto">
-             <style>{`
-                @media print {
-                  body > *:not(#printable-invoice-wrapper), 
-                  body > * .no-print {
-                    display: none !important;
-                  }
-                  #printable-invoice-wrapper, #printable-invoice-wrapper #printable-invoice {
-                    display: block !important;
-                    visibility: visible !important;
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 100%;
-                    margin: 0;
-                    padding: 0;
-                    border: none;
-                    box-shadow: none;
-                  }
-                }
-            `}</style>
             <Dialog open={isRegisterMemberDialogOpen} onOpenChange={setIsRegisterMemberDialogOpen}>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
@@ -210,7 +190,7 @@ Thank you for your business!
                             </div>
                             <div className="text-right">
                                 <h3 className="font-semibold mb-1">Sale Date</h3>
-                                <p className="text-muted-foreground">{new Date(sale.date).toLocaleDateString()}</p>
+                                <p className="text-muted-foreground">{new Date(sale.date).toLocaleDateString('id-ID')}</p>
                                 <h3 className="font-semibold mb-1 mt-2">Cashier</h3>
                                 <p className="text-muted-foreground">{sale.cashierId}</p>
                             </div>
@@ -219,7 +199,7 @@ Thank you for your business!
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="w-[60%]">Item</TableHead>
-                                    <TableHead className="text-center">Quantity (yards)</TableHead>
+                                    <TableHead className="text-center">Quantity</TableHead>
                                     <TableHead className="text-center">Unit Price</TableHead>
                                     <TableHead className="text-right">Total</TableHead>
                                 </TableRow>
@@ -228,9 +208,9 @@ Thank you for your business!
                                 {sale.items.map((item) => (
                                     <TableRow key={item.productId}>
                                         <TableCell className="font-medium">{item.productName}</TableCell>
-                                        <TableCell className="text-center">{item.quantity}</TableCell>
-                                        <TableCell className="text-center">${item.price.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right">${(item.price * item.quantity).toFixed(2)}</TableCell>
+                                        <TableCell className="text-center">{item.quantity} {item.unitName}</TableCell>
+                                        <TableCell className="text-center">Rp{item.price.toLocaleString('id-ID')}</TableCell>
+                                        <TableCell className="text-right">Rp{(item.price * item.quantity).toLocaleString('id-ID')}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -245,17 +225,17 @@ Thank you for your business!
                             <div className="w-full max-w-xs space-y-1">
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Subtotal</span>
-                                    <span>${sale.subtotal.toFixed(2)}</span>
+                                    <span>Rp{sale.subtotal.toLocaleString('id-ID')}</span>
                                 </div>
                                 {sale.discount && sale.discount > 0 && (
                                     <div className="flex justify-between">
                                         <span className="text-muted-foreground">Discount</span>
-                                        <span>-${sale.discount.toFixed(2)}</span>
+                                        <span>-Rp{sale.discount.toLocaleString('id-ID')}</span>
                                     </div>
                                 )}
                                 <div className="flex justify-between text-lg font-bold border-t-2 pt-2 mt-2">
                                     <span>Total</span>
-                                    <span>${sale.total.toFixed(2)}</span>
+                                    <span>Rp{sale.total.toLocaleString('id-ID')}</span>
                                 </div>
                             </div>
                         </div>
