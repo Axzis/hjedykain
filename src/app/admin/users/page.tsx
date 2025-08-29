@@ -4,9 +4,7 @@ import { db } from "@/lib/firebase";
 import { User } from "@/lib/types";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
-const PAGE_SIZE = 10;
-
-async function getUsers(page: number = 1, search: string = ''): Promise<{users: User[], total: number}> {
+async function getUsers(page: number = 1, search: string = '', pageSize: number = 10): Promise<{users: User[], total: number}> {
   const usersCol = collection(db, "users");
   
   const allUsersQuery = query(usersCol, orderBy("name"));
@@ -20,19 +18,20 @@ async function getUsers(page: number = 1, search: string = ''): Promise<{users: 
   
   const total = userList.length;
 
-  const paginatedUsers = userList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginatedUsers = userList.slice((page - 1) * pageSize, page * pageSize);
 
   return { users: paginatedUsers, total };
 }
 
-export default async function AdminUsersPage({ searchParams }: { searchParams: { page?: string, search?: string } }) {
+export default async function AdminUsersPage({ searchParams }: { searchParams: { page?: string, search?: string, pageSize?: string } }) {
     const page = Number(searchParams.page) || 1;
+    const pageSize = Number(searchParams.pageSize) || 10;
     const search = searchParams.search || '';
-    const { users, total } = await getUsers(page, search);
+    const { users, total } = await getUsers(page, search, pageSize);
   
     return (
       <div className="container mx-auto py-2">
-        <UsersDataTable data={users} page={page} total={total} pageSize={PAGE_SIZE} />
+        <UsersDataTable data={users} page={page} total={total} pageSize={pageSize} />
       </div>
     )
   }

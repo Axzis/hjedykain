@@ -4,9 +4,7 @@ import { db } from "@/lib/firebase";
 import { Product } from "@/lib/types";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
-const PAGE_SIZE = 10;
-
-async function getProducts(page: number = 1, search: string = ''): Promise<{products: Product[], total: number}> {
+async function getProducts(page: number = 1, search: string = '', pageSize: number = 10): Promise<{products: Product[], total: number}> {
   const productsCol = collection(db, "products");
   
   const allProductsQuery = query(productsCol, orderBy("name"));
@@ -20,19 +18,20 @@ async function getProducts(page: number = 1, search: string = ''): Promise<{prod
   
   const total = productList.length;
 
-  const paginatedProducts = productList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginatedProducts = productList.slice((page - 1) * pageSize, page * pageSize);
 
   return { products: paginatedProducts, total };
 }
 
-export default async function AdminProductsPage({ searchParams }: { searchParams: { page?: string, search?: string } }) {
+export default async function AdminProductsPage({ searchParams }: { searchParams: { page?: string, search?: string, pageSize?: string } }) {
     const page = Number(searchParams.page) || 1;
+    const pageSize = Number(searchParams.pageSize) || 10;
     const search = searchParams.search || '';
-    const { products, total } = await getProducts(page, search);
+    const { products, total } = await getProducts(page, search, pageSize);
   
     return (
       <div className="container mx-auto py-2">
-        <ProductsDataTable data={products} page={page} total={total} pageSize={PAGE_SIZE}/>
+        <ProductsDataTable data={products} page={page} total={total} pageSize={pageSize}/>
       </div>
     )
   }
