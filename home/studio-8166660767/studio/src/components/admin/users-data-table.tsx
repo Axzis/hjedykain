@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { Product } from '@/lib/types';
-import { TableActions, ProductActions } from './products-data-table-actions';
+import type { User } from '@/lib/types';
+import { AddUserDialog, UserActions } from './users-data-table-actions';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useDebounce } from '@/hooks/use-debounce';
 import {
@@ -22,52 +22,47 @@ import {
   useReactTable,
   flexRender,
 } from '@tanstack/react-table';
+import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
-const columns: ColumnDef<Product>[] = [
+const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
   },
   {
-    accessorKey: 'price',
-    header: () => <div className="text-right">Price</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('price'));
-      const formatted = new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(amount);
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
+    accessorKey: 'email',
+    header: 'Email',
   },
   {
-    accessorKey: 'stock',
-    header: 'Stock',
-     cell: ({row}) => {
-        const stock = row.getValue('stock');
-        return <span>{`${stock}`}</span>
-    }
+    accessorKey: 'role',
+    header: 'Role',
+    cell: ({ row }) => {
+      const role: 'Admin' | 'Cashier' = row.getValue('role');
+      return (
+        <Badge variant={role === 'Admin' ? 'default' : 'secondary'}>
+          {role}
+        </Badge>
+      );
+    },
   },
   {
     id: 'actions',
     cell: ({ row }) => {
-      const product = row.original;
-      return <ProductActions product={product} />;
+      const user = row.original;
+      return <UserActions user={user} />;
     },
   },
 ];
 
 interface DataTableProps {
-  data: Product[];
+  data: User[];
   page: number;
   total: number;
   pageSize: number;
 }
 
-export function ProductsDataTable({ data, page, total, pageSize }: DataTableProps) {
+export function UsersDataTable({ data, page, total, pageSize }: DataTableProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -75,7 +70,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
 
   const [searchValue, setSearchValue] = React.useState(searchParams.get('search') || '');
   const debouncedSearch = useDebounce(searchValue, 500);
-  
+
   const table = useReactTable({
     data,
     columns,
@@ -114,17 +109,17 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
     <div>
       <div className="flex items-center justify-between py-4">
         <Input 
-          placeholder="Filter by product name..." 
-          className="max-w-sm" 
+          placeholder="Filter by user name..." 
+          className="max-w-sm"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        <TableActions />
+        <AddUserDialog />
       </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
@@ -160,9 +155,9 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
+       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="text-sm text-muted-foreground">
-          Showing {table.getRowModel().rows.length} of {total} products.
+          Showing {table.getRowModel().rows.length} of {total} users.
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center space-x-2">
