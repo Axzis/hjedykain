@@ -71,10 +71,10 @@ export default function CashierLayout({
         </SidebarContent>
         <SidebarFooter>
           <SidebarSeparator />
-          <Button asChild variant="ghost">
+          <Button asChild variant="ghost" className="w-full justify-start gap-2">
             <Link href="/login">
-              <LogOut className="mr-2" />
-              Logout
+              <LogOut />
+              <span className="truncate">Logout</span>
             </Link>
           </Button>
         </SidebarFooter>
