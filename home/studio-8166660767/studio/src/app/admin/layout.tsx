@@ -1,8 +1,8 @@
-
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -26,9 +26,19 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  // State untuk mengontrol visibilitas sidebar
+  // Tampil di dashboard, tersembunyi di halaman lain secara default
+  const [isSidebarOpen, setIsSidebarOpen] = useState(pathname === '/admin');
+
+  // Setiap kali path berubah, atur ulang status sidebar
+  // Ini memastikan sidebar selalu terbuka di dashboard dan tertutup di tempat lain
+  useEffect(() => {
+    setIsSidebarOpen(pathname === '/admin');
+  }, [pathname]);
+
 
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
       <Sidebar>
         <SidebarHeader>
           <Logo href="/admin/browse" />
@@ -113,6 +123,7 @@ export default function AdminLayout({
       </Sidebar>
       <SidebarInset>
         <header className="flex h-14 items-center gap-4 border-b bg-background/95 px-6 sticky top-0 z-30">
+            {/* Tombol trigger ini akan selalu ada untuk membuka/menutup sidebar */}
             <SidebarTrigger />
             <div className="flex-1">
                 <h1 className="text-lg font-semibold font-headline">Admin Dashboard</h1>
