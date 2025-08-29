@@ -74,7 +74,7 @@ export default function CashierLayout({
           <Button asChild variant="ghost" className="w-full justify-start gap-2">
             <Link href="/login">
               <LogOut />
-              <span className="truncate">Logout</span>
+              <span className="truncate group-data-[state=collapsed]:hidden">Logout</span>
             </Link>
           </Button>
         </SidebarFooter>
