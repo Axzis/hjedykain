@@ -16,6 +16,45 @@ import { ProductsDataTableContent } from './products-data-table-content';
 import { TableActions } from './products-data-table-actions';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useDebounce } from '@/hooks/use-debounce';
+import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { ProductActions } from './products-data-table-actions';
+
+const columns: ColumnDef<Product>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+  },
+  {
+    accessorKey: 'price',
+    header: () => <div className="text-right">Price</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue('price'));
+      const formatted = new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(amount);
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: 'stock',
+    header: 'Stock',
+     cell: ({row}) => {
+        const stock = row.getValue('stock');
+        return <span>{`${stock}`}</span>
+    }
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      const product = row.original;
+      return <ProductActions product={product} />;
+    },
+  },
+];
+
 
 interface DataTableProps {
   data: Product[];
@@ -32,6 +71,23 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
 
   const [searchValue, setSearchValue] = React.useState(searchParams.get('search') || '');
   const debouncedSearch = useDebounce(searchValue, 500);
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    manualFiltering: true,
+    manualSorting: true,
+    pageCount,
+    state: {
+        pagination: {
+            pageIndex: page - 1,
+            pageSize: pageSize,
+        }
+    }
+  });
+
 
   React.useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -80,7 +136,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
             </TableRow>
           </TableHeader>
           <TableBody>
-            <ProductsDataTableContent data={data} />
+            <ProductsDataTableContent table={table} />
           </TableBody>
         </Table>
       </div>
