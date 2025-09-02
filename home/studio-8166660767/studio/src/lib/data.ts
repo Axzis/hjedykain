@@ -5,7 +5,7 @@ export const products: Product[] = [
   {
     id: 'prod-001',
     name: 'Royal Blue Silk Charmeuse',
-    price: 35.00,
+    price: 350000,
     stock: 120,
     category: 'Silk',
     description: 'A luxurious silk with a beautiful sheen and fluid drape, perfect for elegant evening wear and bridal gowns. Its smooth finish glides against the skin, offering unparalleled comfort and a touch of glamour.',
@@ -21,7 +21,7 @@ export const products: Product[] = [
   {
     id: 'prod-002',
     name: 'Heather Grey Merino Wool Jersey',
-    price: 28.50,
+    price: 285000,
     stock: 250,
     category: 'Wool',
     description: 'A soft, breathable, and temperature-regulating knit fabric. Ideal for comfortable yet stylish base layers, t-shirts, and loungewear. Naturally moisture-wicking and odor-resistant.',
@@ -37,7 +37,7 @@ export const products: Product[] = [
   {
     id: 'prod-003',
     name: 'Classic Indigo Denim',
-    price: 18.00,
+    price: 180000,
     stock: 0,
     category: 'Denim',
     description: 'Durable and timeless, this 12oz denim is the quintessential fabric for jeans, jackets, and skirts. It will soften and fade beautifully with wear, creating a personalized look over time.',
@@ -53,7 +53,7 @@ export const products: Product[] = [
   {
     id: 'prod-004',
     name: 'Oatmeal Linen Blend',
-    price: 22.00,
+    price: 220000,
     stock: 300,
     category: 'Linen',
     description: 'A breezy and lightweight blend of linen and rayon, offering the classic texture of linen with improved wrinkle resistance and a softer hand. Perfect for summer dresses, blouses, and trousers.',
@@ -69,7 +69,7 @@ export const products: Product[] = [
    {
     id: 'prod-005',
     name: 'Scarlet Red Ponte de Roma',
-    price: 16.75,
+    price: 167500,
     stock: 180,
     category: 'Knit',
     description: 'A stable, medium-weight double-knit fabric with a slight horizontal stretch. Its firm structure makes it excellent for creating structured yet comfortable garments like blazers, pencil skirts, and fitted dresses.',
@@ -85,7 +85,7 @@ export const products: Product[] = [
   {
     id: 'prod-006',
     name: 'Black Floral Cotton Lawn',
-    price: 15.00,
+    price: 150000,
     stock: 220,
     category: 'Cotton',
     description: 'A lightweight, finely woven cotton fabric with a crisp, smooth hand. The delicate floral print on a black background makes it a beautiful choice for shirts, dresses, and linings.',
@@ -101,7 +101,7 @@ export const products: Product[] = [
   {
     id: 'prod-007',
     name: 'Khaki Cotton Twill',
-    price: 14.25,
+    price: 142500,
     stock: 0,
     category: 'Cotton',
     description: 'A versatile and sturdy fabric known for its diagonal weave. This medium-weight twill is a go-to for casual trousers, shorts, and light jackets, offering both durability and comfort.',
@@ -117,7 +117,7 @@ export const products: Product[] = [
   {
     id: 'prod-008',
     name: 'Emerald Green Velvet',
-    price: 42.00,
+    price: 420000,
     stock: 90,
     category: 'Velvet',
     description: 'Plush, opulent, and incredibly soft, this stretch velvet catches the light beautifully. Its rich emerald hue is perfect for show-stopping holiday dresses, formal wear, and luxurious decorative pillows.',
@@ -133,8 +133,8 @@ export const products: Product[] = [
 ];
 
 export const users: User[] = [
-    { id: 'user-01', name: 'Admin User', email: 'admin@stitchpos.com', role: 'Admin', password: '12345678' },
-    { id: 'user-02', name: 'Cashier User', email: 'cashier@stitchpos.com', role: 'Cashier', password: '12345678' }
+    { id: 'user-01', name: 'Admin User', email: 'admin@az-pos.com', role: 'Admin', password: 'password' },
+    { id: 'user-02', name: 'Cashier User', email: 'cashier@az-pos.com', role: 'Cashier', password: 'password' }
 ];
 
 export const members: Member[] = [

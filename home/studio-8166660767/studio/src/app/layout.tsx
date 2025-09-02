@@ -14,7 +14,7 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'POS Edy Kain',
+  title: 'AZ - Pos',
   description: 'A modern point-of-sale system for fabric stores.',
 };
 

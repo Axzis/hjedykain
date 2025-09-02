@@ -21,7 +21,7 @@ export default function ShareButton({ productId }: { productId: string }) {
   const handleShare = async () => {
     const shareData = {
       title: 'Check out this fabric!',
-      text: `I found this amazing fabric at POS Edy Kain.`,
+      text: `I found this amazing fabric at AZ - Pos.`,
       url: productUrl,
     };
 

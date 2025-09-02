@@ -66,7 +66,7 @@ export default function InvoicePreview({ initialSale, initialMember }: InvoicePr
           .join('\n');
     
         const message = `
-*Invoice from POS Edy Kain*
+*Invoice from AZ - Pos*
 -------------------------
 *Sale ID:* SALE-${currentSale.id.slice(-6).toUpperCase()}
 *Date:* ${new Date(currentSale.date).toLocaleDateString('id-ID')}

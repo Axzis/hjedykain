@@ -56,7 +56,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
       stock: product?.stock || 0,
       properties: product?.properties || '',
       description: product?.description || '',
-      images: product?.images && product.images.length > 0 ? [...product.images, ...Array(5 - product.images.length).fill('https://placehold.co/600x400.png')].slice(0,5) : defaultPlaceholders,
+      images: product?.images && product.images.length > 0 ? [...product.images, ...Array(5 - product.images.length).fill('')].slice(0,5) : Array(5).fill(''),
     },
   })
 
@@ -65,7 +65,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
     
     const dataToSave = { 
         ...values,
-        images: values.images.filter(img => img.trim() !== '' && img.trim() !== 'https://placehold.co/600x400.png') 
+        images: values.images.filter(img => img && img.trim() !== '') 
     };
 
     if (dataToSave.images.length === 0) {
@@ -233,7 +233,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             ))}
             </div>
             <FormDescription>
-                Provide one main thumbnail and up to four example images.
+                Provide one main thumbnail and up to four example images. Empty fields will be ignored.
             </FormDescription>
         </div>
 

@@ -183,7 +183,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="admin@edykain.com" {...field} />
+                      <Input placeholder="admin@az-pos.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
