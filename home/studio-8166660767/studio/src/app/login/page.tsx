@@ -154,7 +154,7 @@ export default function LoginPage() {
   return (
     <>
     <Header />
-    <div className="flex flex-1 items-center justify-center bg-background p-4">
+    <div className="flex flex-1 items-center justify-center bg-background p-4 min-h-screen">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
@@ -186,7 +186,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="admin@stitchpos.com" {...field} />
+                      <Input placeholder="admin@edykain.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

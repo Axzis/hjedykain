@@ -4,7 +4,6 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from "@/components/ui/toaster"
-import Header from '@/components/common/header';
 import { Analytics } from "@vercel/analytics/next"
 
 const poppins = Poppins({
@@ -14,7 +13,7 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'StitchPOS',
+  title: 'POS Edy Kain',
   description: 'A modern point-of-sale system for fabric stores.',
 };
 
@@ -34,4 +33,3 @@ export default function RootLayout({
       </body>
     </html>
   );
-}

@@ -64,9 +64,9 @@ export default function CashierLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/members')}>
-                <Link href="/admin/members">
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={pathname.startsWith('/cashier/members')}>
+                <Link href="/cashier/members">
                   <Contact />
                   <span>Members</span>
                 </Link>
