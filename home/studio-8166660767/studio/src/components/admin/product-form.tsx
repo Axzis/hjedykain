@@ -32,15 +32,7 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
   properties: z.string().optional(),
   description: z.string().optional(),
-  images: z.array(z.string().optional()).refine(
-    (images) => {
-        // All non-empty strings must be valid URLs
-        return images.every(img => !img || z.string().url().safeParse(img).success)
-    },
-    {
-        message: 'Please provide a valid URL for each image.'
-    }
-  ),
+  images: z.array(z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal(''))),
 })
 
 interface ProductFormProps {
