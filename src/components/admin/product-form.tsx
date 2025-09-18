@@ -32,7 +32,7 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
   properties: z.string().optional(),
   description: z.string().optional(),
-  images: z.array(z.string().url({ message: "Please enter a valid image URL." })).min(1, {message: 'At least one image is required.'}).max(5),
+  images: z.array(z.string().url({ message: "Please enter a valid URL." }).or(z.literal(''))).optional(),
 })
 
 interface ProductFormProps {
@@ -63,7 +63,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
     
     const dataToSave = { 
         ...values,
-        images: values.images.filter(img => img && img.trim() !== '') 
+        images: values.images?.filter(img => img && img.trim() !== '') ?? []
     };
 
     if (dataToSave.images.length === 0) {
@@ -204,9 +204,9 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             name="images.0"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel className="text-sm text-muted-foreground">Thumbnail Image URL</FormLabel>
+                <FormLabel className="text-sm text-muted-foreground">Thumbnail Image URL (Optional)</FormLabel>
                 <FormControl>
-                    <Input placeholder="https://..." {...field} />
+                    <Input placeholder="https://..." {...field} value={field.value ?? ''} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -220,9 +220,9 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
                 name={`images.${i}` as const}
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel className="text-sm text-muted-foreground">{`Example Image ${i}`}</FormLabel>
+                    <FormLabel className="text-sm text-muted-foreground">{`Example Image ${i} (Optional)`}</FormLabel>
                     <FormControl>
-                        <Input placeholder="https://..." {...field} />
+                        <Input placeholder="https://..." {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -231,7 +231,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             ))}
             </div>
             <FormDescription>
-                Provide one main thumbnail and up to four example images. Empty fields will be ignored.
+                Provide URLs for the product images. If all are left blank, a default image will be used.
             </FormDescription>
         </div>
 
