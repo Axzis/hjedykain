@@ -17,13 +17,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
-import type { Product } from '@/lib/types'
-import { useState, useRef } from 'react'
+import type { Product, Unit } from '@/lib/types'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { db } from '@/lib/firebase'
-import { doc, setDoc, addDoc, collection } from 'firebase/firestore'
+import { doc, setDoc, addDoc, collection, getDocs, query, orderBy } from 'firebase/firestore'
 import { uploadImage } from '@/app/actions/upload-actions'
 import { Loader2, Upload } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -32,9 +33,10 @@ const formSchema = z.object({
   category: z.string().optional(),
   price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
+  unitName: z.string().optional(),
   properties: z.string().optional(),
   description: z.string().optional(),
-  images: z.array(z.object({ value: z.string().url().or(z.literal('')) })).optional(),
+  images: z.array(z.string().url({ message: "Please enter a valid URL." }).or(z.literal(''))).optional(),
 })
 
 interface ProductFormProps {
@@ -42,17 +44,34 @@ interface ProductFormProps {
   onFormSubmit?: () => void;
 }
 
+async function getUnits(): Promise<Unit[]> {
+  const unitsCol = collection(db, "units");
+  const unitsQuery = query(unitsCol, orderBy("name"));
+  const unitSnapshot = await getDocs(unitsQuery);
+  return unitSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Unit));
+}
+
+
 export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
   const { toast } = useToast()
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [units, setUnits] = useState<Unit[]>([]);
 
-  const defaultImages = Array(5).fill({ value: '' });
+  useEffect(() => {
+    async function fetchUnits() {
+        const fetchedUnits = await getUnits();
+        setUnits(fetchedUnits);
+    }
+    fetchUnits();
+  }, [])
+
+  const defaultImages = Array(5).fill('');
   if (product?.images) {
     product.images.forEach((img, i) => {
-        if (i < 5) defaultImages[i] = { value: img };
+        if (i < 5) defaultImages[i] = img;
     });
   }
 
@@ -63,6 +82,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
       category: product?.category || '',
       price: product?.price || 0,
       stock: product?.stock || 0,
+      unitName: product?.unitName || '',
       properties: product?.properties || '',
       description: product?.description || '',
       images: defaultImages,
@@ -77,13 +97,14 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSaving(true);
     
-    const imageValues = values.images?.map(img => img.value).filter(img => img && img.trim() !== '') ?? [];
+    const imageValues = values.images?.filter(img => img && img.trim() !== '') ?? [];
 
     const dataToSave = { 
         name: values.name,
         category: values.category,
         price: values.price,
         stock: values.stock,
+        unitName: values.unitName,
         properties: values.properties,
         description: values.description,
         images: imageValues,
@@ -136,7 +157,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
     try {
       const result = await uploadImage(formData);
       if (result.url) {
-        update(index, { value: result.url });
+        update(index, result.url);
         toast({
           title: "Upload Successful",
           description: "Image has been uploaded and URL is set.",
@@ -199,19 +220,43 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
                 </FormItem>
             )}
             />
-             <FormField
-                control={form.control}
-                name="stock"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Stock</FormLabel>
-                    <FormControl>
-                        <Input type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
+            <div className="flex gap-2">
+                 <FormField
+                    control={form.control}
+                    name="stock"
+                    render={({ field }) => (
+                        <FormItem className="flex-grow">
+                        <FormLabel>Stock</FormLabel>
+                        <FormControl>
+                            <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                <FormField
+                    control={form.control}
+                    name="unitName"
+                    render={({ field }) => (
+                        <FormItem className="w-[120px]">
+                        <FormLabel>Unit</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Unit" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {units.map(unit => (
+                                    <SelectItem key={unit.id} value={unit.name}>{unit.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
                 />
+            </div>
         </div>
         
         <FormField
@@ -257,7 +302,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
                 <FormField
                 key={field.id}
                 control={form.control}
-                name={`images.${index}.value`}
+                name={`images.${index}`}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel className="text-sm text-muted-foreground">

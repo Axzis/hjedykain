@@ -1,4 +1,3 @@
-
 import type { Product, User, Member } from './types';
 
 export const products: Product[] = [
