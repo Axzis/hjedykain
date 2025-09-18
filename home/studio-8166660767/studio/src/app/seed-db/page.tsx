@@ -24,8 +24,9 @@ export default function SeedPage() {
       // Seed products
       const productsCollection = collection(db, 'products');
       products.forEach((product) => {
-        const docRef = doc(productsCollection);
-        batch.set(docRef, product);
+        const docRef = doc(productsCollection, product.id);
+        const { id, ...productData } = product;
+        batch.set(docRef, productData);
       });
 
       // Seed users
@@ -72,12 +73,12 @@ export default function SeedPage() {
         <CardHeader>
           <CardTitle className="font-headline text-2xl">Seed Firestore Database</CardTitle>
           <CardDescription>
-            Click the button below to populate your collections in Firestore with initial dummy data. This only needs to be done once.
+            Click the button below to populate your collections in Firestore with initial dummy data. This will overwrite existing data with the same IDs. This is how you can "inject" or update the database schema.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
           <Button onClick={handleSeed} disabled={isLoading} className="w-full" size="lg">
-            {isLoading ? 'Seeding...' : 'Seed Database'}
+            {isLoading ? 'Seeding...' : 'Seed/Update Database'}
           </Button>
           {status && <p className="text-sm text-muted-foreground mt-2">{status}</p>}
         </CardContent>
