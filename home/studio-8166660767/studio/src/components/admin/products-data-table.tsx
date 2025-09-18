@@ -84,6 +84,8 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
 
   const [searchValue, setSearchValue] = React.useState(searchParams.get('search') || '');
   const debouncedSearch = useDebounce(searchValue, 500);
+
+  const sortValue = searchParams.get('sort') ? `${searchParams.get('sort')}-${searchParams.get('order')}` : 'name-asc';
   
   const table = useReactTable({
     data,
@@ -99,10 +101,14 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
     },
   });
 
-  const updateQueryParam = (updates: { key: string; value: string | number }[]) => {
+  const updateQueryParam = (updates: { key: string; value: string | number | null }[]) => {
     const params = new URLSearchParams(searchParams.toString());
     updates.forEach(({ key, value }) => {
-        params.set(key, String(value));
+        if (value === null) {
+            params.delete(key);
+        } else {
+            params.set(key, String(value));
+        }
     });
     router.push(`${pathname}?${params.toString()}`);
   };
@@ -118,17 +124,41 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
     params.set('page', '1');
     router.replace(`${pathname}?${params.toString()}`);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, router, pathname]);
+  }, [debouncedSearch]);
+
+
+  const handleSortChange = (value: string) => {
+    const [sort, order] = value.split('-');
+    updateQueryParam([
+        { key: 'sort', value: sort },
+        { key: 'order', value: order }
+    ]);
+  }
 
   return (
     <div>
       <div className="flex items-center justify-between py-4">
-        <Input 
-          placeholder="Filter by product name..." 
-          className="max-w-sm" 
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-        />
+        <div className="flex items-center gap-2">
+            <Input 
+              placeholder="Filter by product name..." 
+              className="max-w-sm" 
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+            <Select value={sortValue} onValueChange={handleSortChange}>
+                <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                    <SelectItem value="price-desc">Price (High to Low)</SelectItem>
+                    <SelectItem value="price-asc">Price (Low to High)</SelectItem>
+                    <SelectItem value="stock-desc">Stock (High to Low)</SelectItem>
+                    <SelectItem value="stock-asc">Stock (Low to High)</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
         <TableActions />
       </div>
       <div className="rounded-md border">
