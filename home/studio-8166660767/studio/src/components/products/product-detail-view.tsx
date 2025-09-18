@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -47,9 +46,15 @@ export default function ProductDetailView({ product }: { product: Product }) {
         </div>
         <div>
           <h1 className="text-4xl font-headline font-bold leading-tight">{product.name}</h1>
-          <Badge variant="secondary" className="mt-2">{product.properties}</Badge>
+          {product.category && <Badge variant="secondary" className="mt-2">{product.category}</Badge>}
           <Separator className="my-6" />
           <p className="text-foreground/80 leading-relaxed">{product.description}</p>
+          {product.properties && (
+            <>
+              <Separator className="my-6" />
+              <p className="text-sm text-muted-foreground">{product.properties}</p>
+            </>
+          )}
           <Separator className="my-6" />
            <div className="grid grid-cols-2 gap-4 mb-6">
              <Card>
@@ -59,7 +64,7 @@ export default function ProductDetailView({ product }: { product: Product }) {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{product.stock}</div>
-                    <p className="text-xs text-muted-foreground">Available now</p>
+                    <p className="text-xs text-muted-foreground">{product.unitName || 'items'} available</p>
                 </CardContent>
              </Card>
              <Card>
@@ -69,7 +74,7 @@ export default function ProductDetailView({ product }: { product: Product }) {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">Rp{product.price.toLocaleString('id-ID')}</div>
-                    <p className="text-xs text-muted-foreground">per item</p>
+                    <p className="text-xs text-muted-foreground">per {product.unitName || 'item'}</p>
                 </CardContent>
              </Card>
           </div>

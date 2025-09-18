@@ -411,7 +411,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                         <Popover open={isMemberPopoverOpen} onOpenChange={setIsMemberPopoverOpen}>
                         <PopoverTrigger asChild>
                             <Button variant="outline" className="w-full justify-start">
-                            <UserIcon className="mr-2" />
+                            <UserIcon className="mr-2 h-4 w-4" />
                             {selectedMember ? selectedMember.name : "Select Member (Optional)"}
                             </Button>
                         </PopoverTrigger>
@@ -422,17 +422,13 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                                 <CommandEmpty>No members found.</CommandEmpty>
                                 <CommandGroup>
                                     {allMembers.map((member) => (
-                                      <div
-                                        key={member.id}
-                                        onClick={() => handleSelectMember(member.name)}
-                                        className="cursor-pointer"
-                                      >
-                                        <CommandItem
+                                      <CommandItem
+                                          key={member.id}
                                           value={member.name}
+                                          onSelect={() => handleSelectMember(member.name)}
                                         >
                                             {member.name}
-                                        </CommandItem>
-                                      </div>
+                                      </CommandItem>
                                     ))}
                                 </CommandGroup>
                                 </CommandList>
