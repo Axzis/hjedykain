@@ -3,7 +3,7 @@ export type Product = {
   name: string;
   price: number;
   stock: number;
-  unitName?: string;
+  unitName: string;
   category?: string;
   description: string;
   properties: string;
@@ -33,7 +33,7 @@ export type SaleItem = {
   productName: string;
   quantity: number;
   price: number;
-  unitName?: string;
+  unitName: string;
 };
 
 export type Sale = {

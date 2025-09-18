@@ -156,7 +156,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
           productName: selectedProduct.name,
           quantity: quantity,
           price: selectedProduct.price,
-          unitName: selectedProduct.unitName || 'pcs'
+          unitName: selectedProduct.unitName
         },
       ]);
     }
@@ -348,7 +348,7 @@ export default function SalesTerminal({ allProducts, allMembers }: SalesTerminal
                         </div>
                         <div className="p-2 text-sm">
                           <p className="font-semibold truncate">{product.name}</p>
-                          <p className="text-muted-foreground">Rp{product.price.toLocaleString('id-ID')} / {product.unitName || 'pcs'}</p>
+                          <p className="text-muted-foreground">Rp{product.price.toLocaleString('id-ID')} / {product.unitName}</p>
                         </div>
                       </Card>
                     );
