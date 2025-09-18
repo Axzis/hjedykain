@@ -32,7 +32,24 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
   properties: z.string().optional(),
   description: z.string().optional(),
-  images: z.array(z.string().url({ message: "Please enter a valid image URL." })).min(1, {message: 'At least one image is required.'}).max(5),
+  images: z.array(z.string()).refine(
+    (images) => {
+      // Must have at least one image (the thumbnail)
+      return images[0] && images[0].trim() !== '';
+    },
+    {
+      message: 'At least one thumbnail image is required.',
+      path: ['0'], // Point error to the first image field
+    }
+  ).refine(
+    (images) => {
+        // All non-empty strings must be valid URLs
+        return images.every(img => img.trim() === '' || z.string().url().safeParse(img).success)
+    },
+    {
+        message: 'Please provide a valid URL for each image.'
+    }
+  ),
 })
 
 interface ProductFormProps {
@@ -204,7 +221,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             name="images.0"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel className="text-sm text-muted-foreground">Thumbnail Image URL</FormLabel>
+                <FormLabel className="text-sm text-muted-foreground">Thumbnail Image URL (Required)</FormLabel>
                 <FormControl>
                     <Input placeholder="https://..." {...field} />
                 </FormControl>
@@ -220,7 +237,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
                 name={`images.${i}` as const}
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel className="text-sm text-muted-foreground">{`Example Image ${i}`}</FormLabel>
+                    <FormLabel className="text-sm text-muted-foreground">{`Example Image ${i} (Optional)`}</FormLabel>
                     <FormControl>
                         <Input placeholder="https://..." {...field} />
                     </FormControl>
@@ -231,7 +248,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             ))}
             </div>
             <FormDescription>
-                Provide one main thumbnail and up to four example images. Empty fields will be ignored.
+                Provide one main thumbnail and up to four optional example images. Empty fields will be ignored.
             </FormDescription>
         </div>
 
