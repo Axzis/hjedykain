@@ -104,7 +104,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
   const updateQueryParam = (updates: { key: string; value: string | number | null }[]) => {
     const params = new URLSearchParams(searchParams.toString());
     updates.forEach(({ key, value }) => {
-        if (value === null) {
+        if (value === null || value === '') {
             params.delete(key);
         } else {
             params.set(key, String(value));
