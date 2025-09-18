@@ -13,14 +13,13 @@ async function getProducts(
 ): Promise<{products: Product[], total: number}> {
   const productsCol = collection(db, "products");
   
-  // The orderBy in Firestore requires an exact match for filtering, which is tricky with text search.
-  // So we fetch all, then filter and sort in code. This is less efficient for very large datasets
-  // but provides the necessary flexibility for a case-insensitive search.
+  // Firestore's `orderBy` can be used for sorting. For searching, we'll fetch based on sort order
+  // and then filter by search term in-memory. This is a reasonable trade-off for moderately sized datasets.
   const allProductsQuery = query(productsCol, orderBy(sort, order));
   const productSnapshot = await getDocs(allProductsQuery);
   let productList = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
 
-  // Case-insensitive search filter
+  // Case-insensitive search filter on the fetched and sorted data.
   if (search) {
       const searchLower = search.toLowerCase();
       productList = productList.filter(product => product.name.toLowerCase().includes(searchLower));

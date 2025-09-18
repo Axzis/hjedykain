@@ -85,7 +85,9 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
   const [searchValue, setSearchValue] = React.useState(searchParams.get('search') || '');
   const debouncedSearch = useDebounce(searchValue, 500);
 
-  const sortValue = searchParams.get('sort') ? `${searchParams.get('sort')}-${searchParams.get('order')}` : 'name-asc';
+  const sort = searchParams.get('sort') || 'name';
+  const order = searchParams.get('order') || 'asc';
+  const sortValue = `${sort}-${order}`;
   
   const table = useReactTable({
     data,
