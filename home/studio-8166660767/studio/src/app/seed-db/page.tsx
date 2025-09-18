@@ -18,7 +18,7 @@ export default function SeedPage() {
 
   const handleSeed = async () => {
     setIsLoading(true);
-    setStatus('Memperbarui produk dengan kategori...');
+    setStatus('Checking products and updating schema if needed...');
     
     try {
       const batch = writeBatch(db);
@@ -27,19 +27,20 @@ export default function SeedPage() {
       
       let productsUpdated = 0;
 
-      querySnapshot.forEach((document) => {
-        const productData = document.data();
-        // Hanya perbarui dokumen jika field 'category' tidak ada
-        if (!productData.hasOwnProperty('category')) {
-          const docRef = doc(db, 'products', document.id);
-          batch.update(docRef, { category: 'N/A' });
-          productsUpdated++;
-        }
-      });
-
-      // Jika tidak ada produk untuk diperbarui, kita bisa menanam data awal.
-      if (querySnapshot.empty) {
-        setStatus('Database kosong. Menambahkan data awal...');
+      // Scenario 1: Database has products, check and update schema
+      if (!querySnapshot.empty) {
+        querySnapshot.forEach((document) => {
+          const productData = document.data();
+          // Only update documents if the 'category' field is missing
+          if (!productData.hasOwnProperty('category')) {
+            const docRef = doc(db, 'products', document.id);
+            batch.update(docRef, { category: 'N/A' });
+            productsUpdated++;
+          }
+        });
+      } else {
+        // Scenario 2: Database is empty, perform initial seeding
+        setStatus('Database is empty. Adding initial data...');
         // Seed products
         products.forEach((product) => {
             const docRef = doc(productsCollection, product.id);
@@ -64,31 +65,30 @@ export default function SeedPage() {
         });
       }
 
-
       await batch.commit();
 
       let successMessage;
       if (querySnapshot.empty) {
-        successMessage = `Berhasil menambahkan data awal: ${products.length} produk, ${users.length} pengguna, dan ${members.length} anggota.`;
+        successMessage = `Successfully seeded initial data: ${products.length} products, ${users.length} users, and ${members.length} members.`;
       } else if (productsUpdated > 0) {
-        successMessage = `Proses selesai. ${productsUpdated} produk telah diperbarui dengan field kategori.`;
+        successMessage = `Operation complete. ${productsUpdated} existing products have been safely updated with a 'category' field.`;
       } else {
-        successMessage = 'Semua produk sudah memiliki field kategori. Tidak ada yang perlu diperbarui.';
+        successMessage = 'All existing products already have a category. No updates were needed.';
       }
 
       setStatus(successMessage);
       toast({
-        title: 'Proses Selesai',
+        title: 'Operation Successful',
         description: successMessage,
       });
 
     } catch (error) {
-      console.error('Error seeding database:', error);
+      console.error('Error processing database:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       setStatus(`Error: ${errorMessage}`);
       toast({
-        title: 'Proses Gagal',
-        description: `Tidak dapat memproses database. Lihat konsol untuk detail.`,
+        title: 'Operation Failed',
+        description: `Could not process the database. See console for details.`,
         variant: 'destructive',
       });
     } finally {
@@ -100,21 +100,21 @@ export default function SeedPage() {
     <div className="container mx-auto flex min-h-[calc(100vh-10rem)] items-center justify-center">
       <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Manajemen Database</CardTitle>
+          <CardTitle className="font-headline text-2xl">Database Management</CardTitle>
           <CardDescription>
-            Gunakan tombol di bawah untuk mengisi database awal atau memperbarui skema data dengan aman.
+            Use the button below to safely populate or update your database schema.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
             <Alert className="bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-800 dark:text-green-200 [&>svg]:text-green-600 dark:[&>svg]:text-green-400">
               <ShieldCheck className="h-4 w-4" />
-              <AlertTitle>Operasi Aman</AlertTitle>
+              <AlertTitle>Safe Operation</AlertTitle>
               <AlertDescription>
-                Proses ini akan memeriksa produk Anda. Jika ada produk yang belum memiliki field 'category', maka field tersebut akan ditambahkan dengan nilai 'N/A' tanpa mengubah data lainnya. Data Anda yang sudah ada aman.
+                This process will check your existing products. If a product is missing a 'category' field, it will be added with the value 'N/A' without changing any other data. Your existing data is safe.
               </AlertDescription>
             </Alert>
           <Button onClick={handleSeed} disabled={isLoading} className="w-full" size="lg">
-            {isLoading ? 'Memproses...' : 'Isi/Perbarui Database Dengan Aman'}
+            {isLoading ? 'Processing...' : 'Safely Seed / Update Database'}
           </Button>
           {status && <p className="text-sm text-muted-foreground mt-2 text-center">{status}</p>}
         </CardContent>
