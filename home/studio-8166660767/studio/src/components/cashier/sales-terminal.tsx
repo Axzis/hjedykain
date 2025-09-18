@@ -63,7 +63,7 @@ function QuantityDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <Label htmlFor="quantity">Quantity</Label>
+          <Label htmlFor="quantity">Quantity ({product.unitName})</Label>
           <Input
             id="quantity"
             type="number"

@@ -1,4 +1,3 @@
-
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -33,7 +32,7 @@ const formSchema = z.object({
   category: z.string().optional(),
   price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
-  unitName: z.string().optional(),
+  unitName: z.string().min(1, { message: 'Please select a unit.' }),
   properties: z.string().optional(),
   description: z.string().optional(),
   images: z.array(z.string().url({ message: "Please enter a valid URL." }).or(z.literal(''))).optional(),
