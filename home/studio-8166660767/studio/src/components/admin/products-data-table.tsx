@@ -131,7 +131,8 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
     const [sort, order] = value.split('-');
     updateQueryParam([
         { key: 'sort', value: sort },
-        { key: 'order', value: order }
+        { key: 'order', value: order },
+        { key: 'page', value: 1 }
     ]);
   }
 
@@ -210,11 +211,11 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
               <Select
                 value={`${pageSize}`}
                 onValueChange={(value) => {
-                  updateQueryParam([{ key: 'pageSize', value }, { key: 'page', value: 1 }]);
+                  updateQueryParam([{ key: 'pageSize', value: value }, { key: 'page', value: 1 }]);
                 }}
               >
                 <SelectTrigger className="h-8 w-[70px]">
-                  <SelectValue placeholder={pageSize} />
+                  <SelectValue placeholder={`${pageSize}`} />
                 </SelectTrigger>
                 <SelectContent side="top">
                   {[10, 20, 30, 40, 50].map((size) => (
