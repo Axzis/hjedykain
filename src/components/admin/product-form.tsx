@@ -27,6 +27,7 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: 'Product name must be at least 2 characters.',
   }),
+  category: z.string().optional(),
   price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
   properties: z.string().optional(),
@@ -39,8 +40,6 @@ interface ProductFormProps {
   onFormSubmit?: () => void;
 }
 
-const defaultPlaceholders = Array(5).fill('https://placehold.co/600x400.png');
-
 export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
   const { toast } = useToast()
   const router = useRouter();
@@ -50,28 +49,32 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: product?.name || '',
+      category: product?.category || '',
       price: product?.price || 0,
       stock: product?.stock || 0,
       properties: product?.properties || '',
       description: product?.description || '',
-      images: product?.images && product.images.length > 0 ? [...product.images, ...Array(5 - product.images.length).fill('https://placehold.co/600x400.png')].slice(0,5) : defaultPlaceholders,
+      images: product?.images && product.images.length > 0 ? [...product.images, ...Array(5 - product.images.length).fill('')].slice(0,5) : Array(5).fill(''),
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSaving(true);
     
-    const dataToSave = { ...values, images: values.images.filter(img => img.trim() !== '' && img.trim() !== 'https://placehold.co/600x400.png') };
+    const dataToSave = { 
+        ...values,
+        images: values.images.filter(img => img && img.trim() !== '') 
+    };
+
     if (dataToSave.images.length === 0) {
       dataToSave.images.push('https://placehold.co/600x400.png');
     }
-
 
     try {
       if (product) {
         // Update existing product
         const productRef = doc(db, "products", product.id);
-        await setDoc(productRef, dataToSave);
+        await setDoc(productRef, dataToSave, { merge: true });
       } else {
         // Add new product
         await addDoc(collection(db, "products"), dataToSave);
@@ -115,26 +118,26 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., Silk, Denim, Cotton" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="grid grid-cols-2 gap-4">
             <FormField
             control={form.control}
             name="price"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Price (per yard)</FormLabel>
-                <FormControl>
-                    <Input type="number" step="0.01" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="stock"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Stock (yards)</FormLabel>
+                <FormLabel>Price</FormLabel>
                 <FormControl>
                     <Input type="number" {...field} />
                 </FormControl>
@@ -142,7 +145,21 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
                 </FormItem>
             )}
             />
+             <FormField
+                control={form.control}
+                name="stock"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Stock</FormLabel>
+                    <FormControl>
+                        <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
         </div>
+        
         <FormField
           control={form.control}
           name="properties"
@@ -151,7 +168,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
               <FormLabel>Key Properties</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="e.g., 100% Silk, 19mm weight, 45 inch width..."
+                  placeholder="e.g., 100% Sutra, berat 19mm, lebar 114 cm..."
                   {...field}
                 />
               </FormControl>
@@ -214,7 +231,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
             ))}
             </div>
             <FormDescription>
-                Provide one main thumbnail and up to four example images.
+                Provide one main thumbnail and up to four example images. Empty fields will be ignored.
             </FormDescription>
         </div>
 

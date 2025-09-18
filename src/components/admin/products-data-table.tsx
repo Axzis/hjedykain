@@ -23,11 +23,20 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Badge } from '../ui/badge';
 
 const columns: ColumnDef<Product>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
+  },
+  {
+    accessorKey: 'category',
+    header: 'Category',
+    cell: ({ row }) => {
+        const category = row.getValue('category') as string;
+        return category ? <Badge variant="secondary">{category}</Badge> : <span className="text-muted-foreground">N/A</span>;
+    }
   },
   {
     accessorKey: 'price',
@@ -90,11 +99,11 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
     },
   });
 
-  const updateQueryParams = (updates: Record<string, string | number>) => {
+  const updateQueryParam = (updates: { key: string; value: string | number }[]) => {
     const params = new URLSearchParams(searchParams.toString());
-    for (const [key, value] of Object.entries(updates)) {
+    updates.forEach(({ key, value }) => {
         params.set(key, String(value));
-    }
+    });
     router.push(`${pathname}?${params.toString()}`);
   };
 
@@ -109,7 +118,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
     params.set('page', '1');
     router.replace(`${pathname}?${params.toString()}`);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch]);
+  }, [debouncedSearch, router, pathname]);
 
   return (
     <div>
@@ -171,7 +180,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
               <Select
                 value={`${pageSize}`}
                 onValueChange={(value) => {
-                  updateQueryParams({ pageSize: value, page: 1 });
+                  updateQueryParam([{ key: 'pageSize', value }, { key: 'page', value: 1 }]);
                 }}
               >
                 <SelectTrigger className="h-8 w-[70px]">
@@ -193,7 +202,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateQueryParams({ page: page - 1 })}
+                onClick={() => updateQueryParam([{ key: 'page', value: page - 1 }])}
                 disabled={page <= 1}
               >
                 Previous
@@ -201,7 +210,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateQueryParams({ page: page + 1 })}
+                onClick={() => updateQueryParam([{ key: 'page', value: page + 1 }])}
                 disabled={page >= pageCount}
               >
                 Next

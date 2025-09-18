@@ -1,8 +1,10 @@
+
 export type Product = {
   id: string;
   name: string;
   price: number;
   stock: number;
+  category?: string;
   description: string;
   properties: string;
   images: string[];
@@ -46,3 +48,9 @@ export type Sale = {
   memberName_lowercase?: string | null;
   remark?: string | null;
 };
+
+export type Unit = {
+    id: string;
+    name: string;
+    createdAt: string;
+}

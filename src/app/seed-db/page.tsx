@@ -1,12 +1,15 @@
+
 'use client';
 
 import { useState } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, doc, writeBatch } from 'firebase/firestore';
+import { collection, doc, writeBatch, getDocs } from 'firebase/firestore';
 import { products, users, members } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ShieldCheck } from 'lucide-react';
 
 export default function SeedPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,50 +18,78 @@ export default function SeedPage() {
 
   const handleSeed = async () => {
     setIsLoading(true);
-    setStatus('Seeding products, users, and members...');
+    setStatus('Checking products and updating schema if needed...');
     
     try {
       const batch = writeBatch(db);
-      
-      // Seed products
       const productsCollection = collection(db, 'products');
-      products.forEach((product) => {
-        const docRef = doc(productsCollection, product.id);
-        const { id, ...productData } = product;
-        batch.set(docRef, productData);
-      });
+      const querySnapshot = await getDocs(productsCollection);
+      
+      let productsUpdated = 0;
 
-      // Seed users
-      const usersCollection = collection(db, 'users');
-      users.forEach((user) => {
-        const docRef = doc(usersCollection, user.id);
-        const { id, ...userData } = user;
-        batch.set(docRef, userData);
-      });
+      // Scenario 1: Database has products, check and update schema
+      if (!querySnapshot.empty) {
+        setStatus('Database has existing products. Checking for missing category field...');
+        querySnapshot.forEach((document) => {
+          const productData = document.data();
+          // Only update documents if the 'category' field is missing
+          if (!productData.hasOwnProperty('category')) {
+            const docRef = doc(db, 'products', document.id);
+            batch.update(docRef, { category: 'N/A' });
+            productsUpdated++;
+          }
+        });
+      } else {
+        // Scenario 2: Database is empty, perform initial seeding
+        setStatus('Database is empty. Adding initial data...');
+        // Seed products
+        products.forEach((product) => {
+            const docRef = doc(productsCollection, product.id);
+            const { id, ...productData } = product;
+            batch.set(docRef, productData);
+        });
 
-      // Seed members
-      const membersCollection = collection(db, 'members');
-      members.forEach((member) => {
-        const docRef = doc(membersCollection, member.id);
-        const { id, ...memberData } = member;
-        batch.set(docRef, memberData);
-      });
+        // Seed users
+        const usersCollection = collection(db, 'users');
+        users.forEach((user) => {
+            const docRef = doc(usersCollection, user.id);
+            const { id, ...userData } = user;
+            batch.set(docRef, userData);
+        });
+
+        // Seed members
+        const membersCollection = collection(db, 'members');
+        members.forEach((member) => {
+            const docRef = doc(membersCollection, member.id);
+            const { id, ...memberData } = member;
+            batch.set(docRef, memberData);
+        });
+      }
 
       await batch.commit();
 
-      const successMessage = `Successfully seeded ${products.length} products, ${users.length} users, and ${members.length} members.`;
+      let successMessage;
+      if (querySnapshot.empty) {
+        successMessage = `Successfully seeded initial data: ${products.length} products, ${users.length} users, and ${members.length} members.`;
+      } else if (productsUpdated > 0) {
+        successMessage = `Operation complete. ${productsUpdated} existing products have been safely updated with a 'category' field.`;
+      } else {
+        successMessage = 'All existing products already have a category. No updates were needed.';
+      }
+
       setStatus(successMessage);
       toast({
-        title: 'Database Seeded',
+        title: 'Operation Successful',
         description: successMessage,
       });
+
     } catch (error) {
-      console.error('Error seeding database:', error);
+      console.error('Error processing database:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-      setStatus(`Error seeding database: ${errorMessage}`);
+      setStatus(`Error: ${errorMessage}`);
       toast({
-        title: 'Seeding Failed',
-        description: `Could not seed the database. Check the console for details.`,
+        title: 'Operation Failed',
+        description: `Could not process the database. See console for details.`,
         variant: 'destructive',
       });
     } finally {
@@ -68,18 +99,25 @@ export default function SeedPage() {
 
   return (
     <div className="container mx-auto flex min-h-[calc(100vh-10rem)] items-center justify-center">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Seed Firestore Database</CardTitle>
+          <CardTitle className="font-headline text-2xl">Database Management</CardTitle>
           <CardDescription>
-            Click the button below to populate your 'products', 'users', and 'members' collections in Firestore with initial dummy data. This only needs to be done once.
+            Use the button below to safely populate or update your database schema.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
+            <Alert className="bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-800 dark:text-green-200 [&>svg]:text-green-600 dark:[&>svg]:text-green-400">
+              <ShieldCheck className="h-4 w-4" />
+              <AlertTitle>Safe Operation</AlertTitle>
+              <AlertDescription>
+                This process checks your existing products. If a product is missing a 'category' field, it will be added with the value 'N/A' without changing any other data. If your database is empty, it will be seeded with initial data. Your existing data is safe.
+              </AlertDescription>
+            </Alert>
           <Button onClick={handleSeed} disabled={isLoading} className="w-full" size="lg">
-            {isLoading ? 'Seeding...' : 'Seed Database'}
+            {isLoading ? 'Processing...' : 'Safely Seed / Update Database'}
           </Button>
-          {status && <p className="text-sm text-muted-foreground mt-2">{status}</p>}
+          {status && <p className="text-sm text-muted-foreground mt-2 text-center">{status}</p>}
         </CardContent>
       </Card>
     </div>

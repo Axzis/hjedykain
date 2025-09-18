@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,15 +7,17 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import type { Product } from "@/lib/types";
 import { db } from "@/lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 import { useDebounce } from '@/hooks/use-debounce';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-async function getProducts(): Promise<Product[]> {
+async function getProducts(): Promise<{ products: Product[], categories: string[] }> {
   const productsCol = collection(db, "products");
-  const productSnapshot = await getDocs(productsCol);
+  const productSnapshot = await getDocs(query(productsCol));
   const productList = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-  return productList;
+  const categories = [...new Set(productList.map(p => p.category).filter(Boolean) as string[])].sort();
+  return { products: productList, categories };
 }
 
 function ProductGridSkeleton() {
@@ -22,7 +25,7 @@ function ProductGridSkeleton() {
     <>
       {Array.from({ length: 8 }).map((_, i) => (
          <div key={i} className="flex flex-col space-y-3">
-          <Skeleton className="h-[125px] w-full rounded-xl" />
+          <Skeleton className="h-[200px] w-full rounded-xl" />
           <div className="space-y-2">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-3/4" />
@@ -35,24 +38,35 @@ function ProductGridSkeleton() {
 
 export default function BrowsePage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
-  
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      const productList = await getProducts();
+      const { products: productList, categories: categoryList } = await getProducts();
       setProducts(productList);
+      setCategories(categoryList);
       setLoading(false);
     };
     fetchProducts();
   }, []);
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-  );
+  const filteredProducts = products
+    .filter(product => 
+      product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+    )
+    .filter(product => 
+      selectedCategory === 'all' ? true : product.category === selectedCategory
+    )
+    .sort((a, b) => {
+      if (a.stock > 0 && b.stock === 0) return -1;
+      if (a.stock === 0 && b.stock > 0) return 1;
+      return a.name.localeCompare(b.name);
+    });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -62,8 +76,8 @@ export default function BrowsePage() {
         </h1>
         <p className="text-muted-foreground mt-2">Browse through our curated selection of fine fabrics.</p>
       </div>
-      <div className="mb-8 mx-auto max-w-lg">
-          <div className="relative">
+      <div className="mb-8 mx-auto max-w-lg flex gap-4">
+          <div className="relative flex-grow">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
@@ -73,6 +87,17 @@ export default function BrowsePage() {
               className="pl-10 w-full"
             />
           </div>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
       </div>
       {loading ? (
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
