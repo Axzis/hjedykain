@@ -2,7 +2,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,10 +18,12 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import type { Product } from '@/lib/types'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { db } from '@/lib/firebase'
 import { doc, setDoc, addDoc, collection } from 'firebase/firestore'
+import { uploadImage } from '@/app/actions/upload-actions'
+import { Loader2, Upload } from 'lucide-react'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -32,7 +34,7 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
   properties: z.string().optional(),
   description: z.string().optional(),
-  images: z.array(z.string().url({ message: "Please enter a valid URL." }).or(z.literal(''))).optional(),
+  images: z.array(z.object({ value: z.string().url().or(z.literal('')) })).optional(),
 })
 
 interface ProductFormProps {
@@ -44,6 +46,15 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
   const { toast } = useToast()
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const defaultImages = Array(5).fill({ value: '' });
+  if (product?.images) {
+    product.images.forEach((img, i) => {
+        if (i < 5) defaultImages[i] = { value: img };
+    });
+  }
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,16 +65,28 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
       stock: product?.stock || 0,
       properties: product?.properties || '',
       description: product?.description || '',
-      images: product?.images && product.images.length > 0 ? [...product.images, ...Array(5 - product.images.length).fill('')].slice(0,5) : Array(5).fill(''),
+      images: defaultImages,
     },
   })
+  
+  const { fields, update } = useFieldArray({
+    control: form.control,
+    name: "images"
+  });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSaving(true);
     
+    const imageValues = values.images?.map(img => img.value).filter(img => img && img.trim() !== '') ?? [];
+
     const dataToSave = { 
-        ...values,
-        images: values.images?.filter(img => img && img.trim() !== '') ?? []
+        name: values.name,
+        category: values.category,
+        price: values.price,
+        stock: values.stock,
+        properties: values.properties,
+        description: values.description,
+        images: imageValues,
     };
 
     if (dataToSave.images.length === 0) {
@@ -99,6 +122,37 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
       });
     } finally {
       setIsSaving(false);
+    }
+  }
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingIndex(index);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const result = await uploadImage(formData);
+      if (result.url) {
+        update(index, { value: result.url });
+        toast({
+          title: "Upload Successful",
+          description: "Image has been uploaded and URL is set.",
+        })
+      } else {
+        throw new Error(result.error || "Unknown upload error");
+      }
+    } catch (error) {
+      console.error("Upload failed", error);
+      toast({
+        title: "Upload Failed",
+        description: "Could not upload the image. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setUploadingIndex(null);
     }
   }
 
@@ -198,46 +252,56 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
         />
         
         <div className="space-y-4 rounded-md border p-4">
-           <FormLabel>Product Images</FormLabel>
-           <FormField
-            control={form.control}
-            name="images.0"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel className="text-sm text-muted-foreground">Thumbnail Image URL (Optional)</FormLabel>
-                <FormControl>
-                    <Input placeholder="https://..." {...field} value={field.value ?? ''} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <div className="grid grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map((i) => (
+           <FormLabel>Product Images (Optional)</FormLabel>
+            {fields.map((field, index) => (
                 <FormField
-                key={i}
+                key={field.id}
                 control={form.control}
-                name={`images.${i}` as const}
+                name={`images.${index}.value`}
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel className="text-sm text-muted-foreground">{`Example Image ${i} (Optional)`}</FormLabel>
-                    <FormControl>
-                        <Input placeholder="https://..." {...field} value={field.value ?? ''} />
-                    </FormControl>
-                    <FormMessage />
+                        <FormLabel className="text-sm text-muted-foreground">
+                            {index === 0 ? 'Thumbnail Image' : `Example Image ${index}`}
+                        </FormLabel>
+                        <div className="flex items-center gap-2">
+                            <FormControl>
+                                <Input placeholder="https://... or upload" {...field} />
+                            </FormControl>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                disabled={uploadingIndex === index}
+                                onClick={() => fileInputRefs.current[index]?.click()}
+                            >
+                                {uploadingIndex === index ? (
+                                    <Loader2 className="animate-spin" />
+                                ) : (
+                                    <Upload />
+                                )}
+                                <span className="sr-only">Upload Image</span>
+                            </Button>
+                            <input
+                                type="file"
+                                ref={el => (fileInputRefs.current[index] = el)}
+                                className="hidden"
+                                accept="image/png, image/jpeg, image/gif"
+                                onChange={(e) => handleFileChange(e, index)}
+                            />
+                        </div>
+                        <FormMessage />
                     </FormItem>
                 )}
                 />
             ))}
-            </div>
             <FormDescription>
-                Provide URLs for the product images. If all are left blank, a default image will be used.
+                Provide URLs for product images or upload them. If all are left blank, a default image will be used.
             </FormDescription>
         </div>
 
 
-        <Button type="submit" disabled={isSaving}>
-          {isSaving ? 'Saving...' : `Save ${product ? 'Changes' : 'Product'}`}
+        <Button type="submit" disabled={isSaving || uploadingIndex !== null}>
+          {isSaving ? 'Saving...' : (uploadingIndex !== null ? 'Uploading...' : `Save ${product ? 'Changes' : 'Product'}`)}
         </Button>
       </form>
     </Form>
