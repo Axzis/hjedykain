@@ -57,8 +57,13 @@ const columns: ColumnDef<Product>[] = [
     header: 'Stock',
      cell: ({row}) => {
         const stock = row.getValue('stock');
-        return <span>{`${stock}`}</span>
+        const unitName = row.original.unitName;
+        return <span>{`${stock} ${unitName}`}</span>
     }
+  },
+  {
+    accessorKey: 'unitName',
+    header: 'Unit'
   },
   {
     id: 'actions',
