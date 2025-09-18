@@ -122,7 +122,6 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
     } else {
       params.delete('search');
     }
-    // Reset to page 1 when search changes
     params.set('page', '1');
     router.replace(`${pathname}?${params.toString()}`);
   // eslint-disable-next-line react-hooks/exhaustive-deps

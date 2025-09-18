@@ -9,6 +9,7 @@ import { collection, getDocs, query } from "firebase/firestore";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import Header from '@/components/common/header';
 
 async function getProductsAndCategories(): Promise<{ products: Product[], categories: string[] }> {
   const productsCol = collection(db, "products");
@@ -49,7 +50,7 @@ function Filters({ initialSearch, initialCategory, categories }: { initialSearch
 
 function ProductGridSkeleton() {
     return (
-      <>
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
            <div key={i} className="flex flex-col space-y-3">
             <Skeleton className="h-[200px] w-full rounded-xl" />
@@ -59,7 +60,7 @@ function ProductGridSkeleton() {
             </div>
           </div>
         ))}
-      </>
+      </div>
     )
   }
 
@@ -100,16 +101,21 @@ export default function BrowsePage({ searchParams }: { searchParams: { search?: 
   const category = searchParams.category || '';
 
   return (
-    <div className="container mx-auto px-4 py-8">
-       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-headline font-bold tracking-tight">
-            Our Fabric Collection
-        </h1>
-        <p className="text-muted-foreground mt-2">Browse through our curated selection of fine fabrics.</p>
+    <>
+    <Header />
+    <main className="flex-1">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8 text-center">
+            <h1 className="text-4xl font-headline font-bold tracking-tight">
+                Our Fabric Collection
+            </h1>
+            <p className="text-muted-foreground mt-2">Browse through our curated selection of fine fabrics.</p>
+        </div>
+        <Suspense fallback={<ProductGridSkeleton />}>
+            <BrowseContent searchTerm={searchTerm} category={category} />
+        </Suspense>
       </div>
-      <Suspense fallback={ <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"><ProductGridSkeleton /></div>}>
-        <BrowseContent searchTerm={searchTerm} category={category} />
-      </Suspense>
-    </div>
+    </main>
+    </>
   );
 }

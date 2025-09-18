@@ -8,11 +8,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableCell,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { Sale } from '@/lib/types';
-import { SalesHistoryDataTableContent } from '@/components/shared/sales-history-data-table-content';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable, getPaginationRowModel, getFilteredRowModel, getSortedRowModel, ColumnDef, SortingState, ColumnFiltersState, flexRender } from '@tanstack/react-table';
 import { format } from 'date-fns';
@@ -75,6 +75,7 @@ const getColumns = (isUserAdmin: boolean, router: ReturnType<typeof useRouter>):
           style: 'currency',
           currency: 'IDR',
           minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
         }).format(amount);
         return <div className="text-right font-medium">{formatted}</div>;
       },
@@ -124,7 +125,6 @@ export function SalesHistoryTable({ data, page, total, pageSize }: DataTableProp
   const pageCount = Math.ceil(total / pageSize);
   
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   
   const [searchValue, setSearchValue] = React.useState(searchParams.get('search') || '');
   const debouncedSearch = useDebounce(searchValue, 500);
@@ -138,14 +138,12 @@ export function SalesHistoryTable({ data, page, total, pageSize }: DataTableProp
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualFiltering: true,
     pageCount,
     state: {
       sorting,
-      columnFilters,
       pagination: {
         pageIndex: page - 1,
         pageSize: pageSize,
@@ -237,7 +235,7 @@ export function SalesHistoryTable({ data, page, total, pageSize }: DataTableProp
             const date = format(new Date(sale.date), 'yyyy-MM-dd HH:mm:ss');
             const memberName = sale.memberName || "N/A";
             const totalItems = sale.items.reduce((sum, item) => sum + item.quantity, 0);
-            const itemsSold = `"${sale.items.map(i => `${i.quantity}m of ${i.productName}`).join(', ')}"`;
+            const itemsSold = `"${sale.items.map(i => `${i.quantity} of ${i.productName}`).join(', ')}"`;
             const remark = sale.remark ? `"${sale.remark.replace(/"/g, '""')}"` : "";
 
             return [
@@ -310,7 +308,23 @@ export function SalesHistoryTable({ data, page, total, pageSize }: DataTableProp
             ))}
           </TableHeader>
           <TableBody>
-            <SalesHistoryDataTableContent table={table} />
+            {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                    {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                    ))}
+                </TableRow>
+                ))
+            ) : (
+                <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No sales found.
+                </TableCell>
+                </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

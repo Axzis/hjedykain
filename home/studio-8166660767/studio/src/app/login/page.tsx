@@ -33,6 +33,7 @@ import { collection, query, where, getDocs, getCountFromServer } from 'firebase/
 import { User } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
+import Header from '@/components/common/header';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -151,7 +152,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <>
+    <Header />
+    <div className="flex flex-1 items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
@@ -183,7 +186,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="admin@az-pos.com" {...field} />
+                      <Input placeholder="admin@stitchpos.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -231,5 +234,6 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

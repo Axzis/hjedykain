@@ -14,7 +14,7 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'AZ - Pos',
+  title: 'StitchPOS',
   description: 'A modern point-of-sale system for fabric stores.',
 };
 
@@ -27,8 +27,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn(poppins.variable, 'min-h-screen bg-background font-sans antialiased')}>
         <div className="relative flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
+          {children}
         </div>
         <Toaster />
         <Analytics />
