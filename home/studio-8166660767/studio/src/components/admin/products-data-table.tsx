@@ -211,7 +211,7 @@ export function ProductsDataTable({ data, page, total, pageSize }: DataTableProp
               <Select
                 value={`${pageSize}`}
                 onValueChange={(value) => {
-                  updateQueryParam([{ key: 'pageSize', value: value }, { key: 'page', value: 1 }]);
+                  updateQueryParam([{ key: 'pageSize', value: Number(value) }, { key: 'page', value: 1 }]);
                 }}
               >
                 <SelectTrigger className="h-8 w-[70px]">
