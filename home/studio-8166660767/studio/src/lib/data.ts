@@ -1,3 +1,4 @@
+
 import type { Product, User, Member } from './types';
 
 export const products: Product[] = [
@@ -7,7 +8,7 @@ export const products: Product[] = [
     price: 350000,
     stock: 120,
     category: 'Silk',
-    unitName: 'meter',
+    unitName: 'yard',
     description: 'A luxurious silk with a beautiful sheen and fluid drape, perfect for elegant evening wear and bridal gowns. Its smooth finish glides against the skin, offering unparalleled comfort and a touch of glamour.',
     properties: '100% Silk, 19mm weight, 45" width, Satin weave',
     images: [
@@ -24,7 +25,7 @@ export const products: Product[] = [
     price: 285000,
     stock: 250,
     category: 'Wool',
-    unitName: 'meter',
+    unitName: 'yard',
     description: 'A soft, breathable, and temperature-regulating knit fabric. Ideal for comfortable yet stylish base layers, t-shirts, and loungewear. Naturally moisture-wicking and odor-resistant.',
     properties: '100% Merino Wool, 150 GSM, 60" width, Jersey knit',
     images: [
@@ -41,7 +42,7 @@ export const products: Product[] = [
     price: 180000,
     stock: 0,
     category: 'Denim',
-    unitName: 'meter',
+    unitName: 'yard',
     description: 'Durable and timeless, this 12oz denim is the quintessential fabric for jeans, jackets, and skirts. It will soften and fade beautifully with wear, creating a personalized look over time.',
     properties: '100% Cotton, 12 oz weight, 58" width, 3x1 Twill weave',
     images: [
@@ -58,7 +59,7 @@ export const products: Product[] = [
     price: 220000,
     stock: 300,
     category: 'Linen',
-    unitName: 'meter',
+    unitName: 'yard',
     description: 'A breezy and lightweight blend of linen and rayon, offering the classic texture of linen with improved wrinkle resistance and a softer hand. Perfect for summer dresses, blouses, and trousers.',
     properties: '55% Linen / 45% Rayon, 5.3 oz weight, 54" width, Plain weave',
     images: [
@@ -75,7 +76,7 @@ export const products: Product[] = [
     price: 167500,
     stock: 180,
     category: 'Knit',
-    unitName: 'meter',
+    unitName: 'yard',
     description: 'A stable, medium-weight double-knit fabric with a slight horizontal stretch. Its firm structure makes it excellent for creating structured yet comfortable garments like blazers, pencil skirts, and fitted dresses.',
     properties: 'Rayon/Nylon/Spandex blend, 320 GSM, 59" width, Double knit',
     images: [
@@ -92,7 +93,7 @@ export const products: Product[] = [
     price: 150000,
     stock: 220,
     category: 'Cotton',
-    unitName: 'meter',
+    unitName: 'yard',
     description: 'A lightweight, finely woven cotton fabric with a crisp, smooth hand. The delicate floral print on a black background makes it a beautiful choice for shirts, dresses, and linings.',
     properties: '100% Cotton, 70 GSM, 56" width, Plain weave',
     images: [
@@ -109,7 +110,7 @@ export const products: Product[] = [
     price: 142500,
     stock: 0,
     category: 'Cotton',
-    unitName: 'meter',
+    unitName: 'yard',
     description: 'A versatile and sturdy fabric known for its diagonal weave. This medium-weight twill is a go-to for casual trousers, shorts, and light jackets, offering both durability and comfort.',
     properties: '97% Cotton / 3% Spandex, 8 oz weight, 57" width, Twill weave',
     images: [
@@ -126,7 +127,7 @@ export const products: Product[] = [
     price: 420000,
     stock: 90,
     category: 'Velvet',
-    unitName: 'meter',
+    unitName: 'yard',
     description: 'Plush, opulent, and incredibly soft, this stretch velvet catches the light beautifully. Its rich emerald hue is perfect for show-stopping holiday dresses, formal wear, and luxurious decorative pillows.',
     properties: '90% Polyester / 10% Spandex, 350 GSM, 60" width, Knitted pile',
     images: [

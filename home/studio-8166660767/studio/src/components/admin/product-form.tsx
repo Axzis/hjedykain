@@ -17,14 +17,13 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
-import type { Product, Unit } from '@/lib/types'
-import { useState, useRef, useEffect } from 'react'
+import type { Product } from '@/lib/types'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { db } from '@/lib/firebase'
-import { doc, setDoc, addDoc, collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { doc, setDoc, addDoc, collection } from 'firebase/firestore'
 import { uploadImage } from '@/app/actions/upload-actions'
 import { Loader2, Upload } from 'lucide-react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -33,7 +32,7 @@ const formSchema = z.object({
   category: z.string().optional(),
   price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
-  unitName: z.string().min(1, { message: 'Please select a unit.' }),
+  unitName: z.string().min(1, { message: 'Unit name is required.' }),
   properties: z.string().optional(),
   description: z.string().optional(),
   images: z.array(z.string().url({ message: "Please enter a valid URL." }).or(z.literal(''))).optional(),
@@ -44,29 +43,12 @@ interface ProductFormProps {
   onFormSubmit?: () => void;
 }
 
-async function getUnits(): Promise<Unit[]> {
-  const unitsCol = collection(db, "units");
-  const unitsQuery = query(unitsCol, orderBy("name"));
-  const unitSnapshot = await getDocs(unitsQuery);
-  return unitSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Unit));
-}
-
-
 export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
   const { toast } = useToast()
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [units, setUnits] = useState<Unit[]>([]);
-
-  useEffect(() => {
-    async function fetchUnits() {
-        const fetchedUnits = await getUnits();
-        setUnits(fetchedUnits);
-    }
-    fetchUnits();
-  }, [])
 
   const defaultImages = Array(5).fill('');
   if (product?.images) {
@@ -82,7 +64,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
       category: product?.category || '',
       price: product?.price || 0,
       stock: product?.stock || 0,
-      unitName: product?.unitName || '',
+      unitName: product?.unitName || 'yard',
       properties: product?.properties || '',
       description: product?.description || '',
       images: defaultImages,
@@ -100,15 +82,9 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
     const imageValues = values.images?.filter(img => img && img.trim() !== '') ?? [];
 
     const dataToSave = { 
-        name: values.name,
-        category: values.category,
-        price: values.price,
-        stock: values.stock,
-        unitName: values.unitName,
-        properties: values.properties,
-        description: values.description,
-        images: imageValues,
+        ...values
     };
+    dataToSave.images = imageValues;
 
     if (dataToSave.images.length === 0) {
       dataToSave.images.push('https://placehold.co/600x400.png');
@@ -220,7 +196,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
                 </FormItem>
             )}
             />
-            <div className="flex gap-2">
+            <div className="grid grid-cols-2 gap-2">
                  <FormField
                     control={form.control}
                     name="stock"
@@ -238,20 +214,11 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
                     control={form.control}
                     name="unitName"
                     render={({ field }) => (
-                        <FormItem className="w-[120px]">
+                        <FormItem className="flex-grow">
                         <FormLabel>Unit</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Unit" />
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {units.map(unit => (
-                                    <SelectItem key={unit.id} value={unit.name}>{unit.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <FormControl>
+                            <Input placeholder="e.g., yard" {...field} />
+                        </FormControl>
                         <FormMessage />
                         </FormItem>
                     )}

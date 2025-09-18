@@ -31,10 +31,17 @@ export default function SeedPage() {
       if (!querySnapshot.empty) {
         querySnapshot.forEach((document) => {
           const productData = document.data();
-          // Only update documents if the 'category' field is missing
+          const updateData: { category?: string; unitName?: string } = {};
           if (!productData.hasOwnProperty('category')) {
+            updateData.category = 'N/A';
+          }
+          if (!productData.hasOwnProperty('unitName')) {
+            updateData.unitName = 'yard';
+          }
+
+          if (Object.keys(updateData).length > 0) {
             const docRef = doc(db, 'products', document.id);
-            batch.update(docRef, { category: 'N/A' });
+            batch.update(docRef, updateData);
             productsUpdated++;
           }
         });
@@ -71,9 +78,9 @@ export default function SeedPage() {
       if (querySnapshot.empty) {
         successMessage = `Successfully seeded initial data: ${products.length} products, ${users.length} users, and ${members.length} members.`;
       } else if (productsUpdated > 0) {
-        successMessage = `Operation complete. ${productsUpdated} existing products have been safely updated with a 'category' field.`;
+        successMessage = `Operation complete. ${productsUpdated} existing products have been safely updated with default fields.`;
       } else {
-        successMessage = 'All existing products already have a category. No updates were needed.';
+        successMessage = 'All existing products already have the required fields. No updates were needed.';
       }
 
       setStatus(successMessage);
@@ -110,7 +117,7 @@ export default function SeedPage() {
               <ShieldCheck className="h-4 w-4" />
               <AlertTitle>Safe Operation</AlertTitle>
               <AlertDescription>
-                This process will check your existing products. If a product is missing a 'category' field, it will be added with the value 'N/A' without changing any other data. Your existing data is safe.
+                This process will check your existing products. If a product is missing 'category' or 'unitName', it will be added with default values ('N/A' and 'yard') without changing other data. Your existing data is safe.
               </AlertDescription>
             </Alert>
           <Button onClick={handleSeed} disabled={isLoading} className="w-full" size="lg">

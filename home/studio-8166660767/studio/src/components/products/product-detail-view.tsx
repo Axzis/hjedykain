@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -64,7 +65,7 @@ export default function ProductDetailView({ product }: { product: Product }) {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{product.stock}</div>
-                    <p className="text-xs text-muted-foreground">{product.unitName || 'items'} available</p>
+                    <p className="text-xs text-muted-foreground">{product.unitName} available</p>
                 </CardContent>
              </Card>
              <Card>
@@ -74,7 +75,7 @@ export default function ProductDetailView({ product }: { product: Product }) {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">Rp{product.price.toLocaleString('id-ID')}</div>
-                    <p className="text-xs text-muted-foreground">per {product.unitName || 'item'}</p>
+                    <p className="text-xs text-muted-foreground">per {product.unitName}</p>
                 </CardContent>
              </Card>
           </div>

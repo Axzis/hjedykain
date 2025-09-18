@@ -66,7 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </p>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Layers3 className="h-4 w-4"/>
-                <span>{product.stock} in stock</span>
+                <span>{product.stock} {product.unitName}</span>
             </div>
         </div>
       </CardContent>

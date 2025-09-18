@@ -62,10 +62,6 @@ const columns: ColumnDef<Product>[] = [
     }
   },
   {
-    accessorKey: 'unitName',
-    header: 'Unit'
-  },
-  {
     id: 'actions',
     cell: ({ row }) => {
       const product = row.original;
