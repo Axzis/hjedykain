@@ -32,7 +32,7 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, { message: 'Stock cannot be negative.' }),
   properties: z.string().optional(),
   description: z.string().optional(),
-  images: z.array(z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal(''))),
+  images: z.array(z.string().url({ message: "Please enter a valid URL." }).or(z.literal(''))).optional(),
 })
 
 interface ProductFormProps {
@@ -63,7 +63,7 @@ export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
     
     const dataToSave = { 
         ...values,
-        images: values.images.filter((img): img is string => !!img && img.trim() !== '') 
+        images: values.images?.filter(img => img && img.trim() !== '') ?? []
     };
 
     if (dataToSave.images.length === 0) {
