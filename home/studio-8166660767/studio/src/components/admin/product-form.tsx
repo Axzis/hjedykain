@@ -40,8 +40,6 @@ interface ProductFormProps {
   onFormSubmit?: () => void;
 }
 
-const defaultPlaceholders = Array(5).fill('https://placehold.co/600x400.png');
-
 export function ProductForm({ product, onFormSubmit }: ProductFormProps) {
   const { toast } = useToast()
   const router = useRouter();
